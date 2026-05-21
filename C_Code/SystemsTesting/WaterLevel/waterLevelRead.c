@@ -5,33 +5,7 @@
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include "waterLevelADS1015.h"
-
-#define STABLE_DELTA_THRESHOLD  7.0f
-#define STABLE_CONFIRM_CYCLES   3
-
-static const struct { float pct; float mm; } CAL[] = {
-    { 0.00f,  0.0f },
-    { 0.48f,  5.0f },
-    { 0.70f, 10.0f },
-    { 0.80f, 15.0f },
-    { 0.89f, 20.0f },
-    { 0.94f, 25.0f },
-    { 0.97f, 30.0f },
-    { 1.00f, 35.0f },
-};
-#define CAL_POINTS (int)(sizeof(CAL) / sizeof(CAL[0]))
-
-static float pct_to_mm(float pct) {
-    if (pct <= CAL[0].pct) return CAL[0].mm;
-    if (pct >= CAL[CAL_POINTS - 1].pct) return CAL[CAL_POINTS - 1].mm;
-    for (int i = 1; i < CAL_POINTS; i++) {
-        if (pct <= CAL[i].pct) {
-            float t = (pct - CAL[i-1].pct) / (CAL[i].pct - CAL[i-1].pct);
-            return CAL[i-1].mm + t * (CAL[i].mm - CAL[i-1].mm);
-        }
-    }
-    return CAL[CAL_POINTS - 1].mm;
-}
+#include "waterLevel.h"
 
 static void run_live_monitor(int fd, int channel, int num_samples, int interval_ms, float cal_max_adc) {
     float prev_avg  = -1.0f;
