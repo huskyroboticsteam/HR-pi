@@ -1,5 +1,9 @@
+// TO COMPILE:
+// gcc colorReadTest.c ../functions.c -lwiringPi -lm -o ../../Executables/colorReadTest
+
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
+#include <math.h>
 #include "../functions.h"
 #define DEVICE_ID 0x39
 #define COMMAND_REGISTER_BIT 0x80
@@ -109,6 +113,35 @@ int main(int argc, char *argv[]){
 
     printf("Cal  - Red: %.3f  Green: %.3f  Blue: %.3f\n", r, g, b);
     printf("RGB  - Red: %d  Green: %d  Blue: %d\n", rgb_r, rgb_g, rgb_b);
+
+    // Target color references — fill in by reading the RGB line for each target liquid
+    // under final operating conditions, averaging several samples for stability.
+    #define REF_R_A 0
+    #define REF_G_A 0
+    #define REF_B_A 0
+
+    #define REF_R_B 0
+    #define REF_G_B 0
+    #define REF_B_B 0
+
+    // Match threshold (Euclidean distance in 0–255 RGB space, max ~441).
+    // Must be larger than the natural variation of each target and smaller than
+    // half the distance between REF_A and REF_B. Tune with real data.
+    #define MATCH_THRESHOLD 40.0f
+
+    float dr_a = rgb_r - REF_R_A, dg_a = rgb_g - REF_G_A, db_a = rgb_b - REF_B_A;
+    float dr_b = rgb_r - REF_R_B, dg_b = rgb_g - REF_G_B, db_b = rgb_b - REF_B_B;
+    float dist_a = sqrtf(dr_a * dr_a + dg_a * dg_a + db_a * db_a);
+    float dist_b = sqrtf(dr_b * dr_b + dg_b * dg_b + db_b * db_b);
+    printf("Dist - A: %.1f  B: %.1f\n", dist_a, dist_b);
+
+    if (dist_a < dist_b && dist_a < MATCH_THRESHOLD) {
+        printf("Match: target A\n");
+    } else if (dist_b < MATCH_THRESHOLD) {
+        printf("Match: target B\n");
+    } else {
+        printf("Match: none\n");
+    }
 
     return 0;
 }
