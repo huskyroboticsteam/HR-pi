@@ -55,19 +55,22 @@ void collect_and_deposit_dirt(){
     // ToF sensor to measure when augur is done
     int zero = zeroCalibration();
     int distance = zero - tofReadDistance();
+    int32_t ground = read_position_ticks(); // NOTE: Each tick is ~0.012mm.
     while (distance < AUGUR_DONE_DISTANCE) {
-        int32_t ticks = read_position_ticks();
-        if(ticks < (COLUMN_LOWER_POSITION + 500)){
-            fprintf(stderr, "ERROR: Column encoder reading %d ticks is below expected range. Check column position and encoder.\n", ticks);
+        int32_t ticks = read_position_ticks(); // Get augur position
+        if(ticks < (COLUMN_LOWER_POSITION + 500)){ //Make sure augur is not too low
+            fprintf(stderr, "ERROR: Column encoder reading %d ticks is below expected range. "
+                 "Check column position and encoder.\n", ticks);
             break;
         }
-        int32_t distance_remaining = ticks_remaining(ticks, (ticks - 100));
-        while(distance_remaining > 5){
-            digitalWrite(COLUMN_RL_PIN1, 1);
+        if((ground - ticks) > 8333){ // If augur has moved 10cm (8333 ticks) down, stop. Otherwise, dig down.
+            int32_t distance_remaining = ticks_remaining(ticks, (ticks - 100));
+            while(distance_remaining > 5){
+                digitalWrite(COLUMN_RL_PIN1, 1);
+            }
         }
         digitalWrite(COLUMN_RL_PIN1, 0);
         usleep(200000 /* 2ms, 5/sec */);
-        digitalWrite(COLUMN_RL_PIN1, 0);
         distance = zero - tofReadDistance();
     }
  

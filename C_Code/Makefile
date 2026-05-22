@@ -1,4 +1,4 @@
-all: getD centriAbs fpwm resetEnc toggle all_low colorRead  rotateServoTo rotateTo_column raise_lower_column raiseLower_pump tofTest waterLevelCalibrate 1wTempSensor PWM_Map dirtSample
+all: getD centriAbs fpwm resetEnc toggle all_low colorRead  rotateServoTo rotateTo_column raise_lower_column raiseLower_pump tofTest waterLevelCalibrate 1wTempSensor PWM_Map dirtSample pumpToHeight
 # Temporarily disabled:
 # waterLevelRead
 
@@ -45,6 +45,8 @@ PWM_Map: functions.c pins.h SystemsTesting/Augur/PWM_Map.c
 	gcc -DBUILD_PWMMAP_MAIN SystemsTesting/Augur/PWM_Map.c functions.c pins.h -lwiringPi -o ../Executables/PWM_Map
 waterLevelCalibrate: SystemsTesting/WaterLevel/waterLevelCalibrate.c SystemsTesting/WaterLevel/waterLevelADS1015.c
 	gcc -DBUILD_WATERLEVELCALIBRATE_MAIN SystemsTesting/WaterLevel/waterLevelCalibrate.c SystemsTesting/WaterLevel/waterLevelADS1015.c -lwiringPi -o ../Executables/waterLevelCalibrate
+pumpToHeight: SystemsTesting/WaterLevel/pumpToHeight.c SystemsTesting/WaterLevel/waterLevelADS1015.c SystemsTesting/WaterLevel/waterLevel.c
+	gcc -DBUILD_PUMPTOHEIGHT_MAIN SystemsTesting/WaterLevel/pumpToHeight.c SystemsTesting/WaterLevel/waterLevelADS1015.c SystemsTesting/WaterLevel/waterLevel.c -lwiringPi -lm -o ../Executables/pumpToHeight
 # Error: undefined reference to `pct_to_mm' (line 47)
 # waterLevelRead: SystemsTesting/WaterLevel/waterLevelRead.c SystemsTesting/WaterLevel/waterLevelADS1015.c
 #	gcc -DBUILD_WATERLEVELREAD_MAIN SystemsTesting/WaterLevel/waterLevelRead.c SystemsTesting/WaterLevel/waterLevelADS1015.c -lwiringPi -o ../Executables/waterLevelRead

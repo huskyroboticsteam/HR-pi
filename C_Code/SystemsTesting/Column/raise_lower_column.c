@@ -16,7 +16,7 @@
 /* Motion monitoring: if encoder speed stays below this while still far from the
  * target, the column is treated as stuck. Tune after measuring normal cruise speed. */
 #define CONTROL_SAMPLE_US 10000
-#define MIN_SPEED_TICKS_S_N 650
+#define MIN_SPEED_TICKS_S_N 580
 #define MIN_SPEED_TICKS_S_P 550
 #define STALL_CONFIRM_SAMPLES 3
 #define STALL_GRACE_US 300000 /* ignore stall until the motor has had time to ramp */
