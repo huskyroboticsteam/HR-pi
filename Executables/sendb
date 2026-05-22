@@ -1,3 +1,0 @@
-#!/bin/bash
-openFPGALoader -b titanium_ti60_f225 ~/FPGAbin/test_project.hex
-
