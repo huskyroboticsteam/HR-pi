@@ -2,11 +2,12 @@
 #include <wiringPiSPI.h>
 #include <stdint.h>
 #include <unistd.h>
-#include "../functions.h"
-#include "Column/raise_lower_column.c"
-#include "Column/rotateTo_column.c"
-#include "Augur/PWM_Map.c"
-#include "tofTest.c"
+#include "../../functions.h"
+#include "../Column/raise_lower_column.c"
+#include "../Column/rotateTo_column.c"
+#include "../Augur/PWM_Map.c"
+#include "../tof.c" // No idea why this requries the c file, but the h file doesn't work for some reason.
+#include "../tofTest.c"
 
 // FPGA PWM channel for the dirt-sample servo. Set by startup.sh (`fpwm 2 1500`).
 #define DIRT_SAMPLE_CHANNEL 2
@@ -36,7 +37,7 @@
 
 void collect_and_deposit_dirt(){
     // Move column to top
-    raiseLowerTo(10000000000, COLUMN_RL_PIN2, COLUMN_RL_PIN1);
+    raiseLowerTo(1000000, COLUMN_RL_PIN2, COLUMN_RL_PIN1);
 
     // Move column to pickup position
     rotateTo(PICKUP_ROTATE_POSITION, H1A_3, H1A_4);

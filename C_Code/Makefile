@@ -48,7 +48,7 @@ waterLevelCalibrate: SystemsTesting/WaterLevel/waterLevelCalibrate.c SystemsTest
 # Error: undefined reference to `pct_to_mm' (line 47)
 # waterLevelRead: SystemsTesting/WaterLevel/waterLevelRead.c SystemsTesting/WaterLevel/waterLevelADS1015.c
 #	gcc -DBUILD_WATERLEVELREAD_MAIN SystemsTesting/WaterLevel/waterLevelRead.c SystemsTesting/WaterLevel/waterLevelADS1015.c -lwiringPi -o ../Executables/waterLevelRead
-dirtSample: functions.c pins.h SystemsTesting/dirtSample.c 
-	gcc -DBUILD_DSAMPLE_MAIN SystemsTesting/dirtSample.c functions.c  -lwiringPi -o ../Executables/dirtSample
+dirtSample: functions.c pins.h SystemsTesting/Automation/dirtSample.c 
+	gcc -DBUILD_DSAMPLE_MAIN SystemsTesting/Automation/dirtSample.c functions.c  -lwiringPi -o ../Executables/dirtSample
 centrifugeSpin: functions.c pins.h SystemsTesting/Centrifuge/centrifugeSpin.c
 	gcc -DBUILD_CENTRIFUGESPIN_MAIN SystemsTesting/Centrifuge/centrifugeSpin.c functions.c -lwiringPi -o ../Executables/centrifugeSpin
