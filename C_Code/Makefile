@@ -11,6 +11,9 @@ centriAbs: functions.c pins.h FPGAtesting/centriAbs.c
 	gcc -DBUILD_CENTRIABS_MAIN FPGAtesting/centriAbs.c functions.c -lwiringPi -o ../Executables/centriAbs
 fpwm: functions.c pins.h FPGAtesting/Fpwm.c
 	gcc -DBUILD_FPWM_MAIN FPGAtesting/Fpwm.c functions.c -lwiringPi -o ../Executables/fpwm
+softPWM: functions.c pins.h SystemsTesting/softPWM.c
+	gcc SystemsTesting/softPWM.c functions.c -lwiringPi -o ../Executables/softPWM
+
 resetEnc: functions.c pins.h SystemsTesting/resetEnc.c
 	gcc -DBUILD_RESETENC_MAIN SystemsTesting/resetEnc.c functions.c -lwiringPi -o ../Executables/resetEnc
 toggle: functions.c pins.h SystemsTesting/toggle.c
