@@ -1,30 +1,31 @@
-#define LOAD5_1_1 25 // Pump
-#define LOAD5_1_2 24 // Pump
-#define LOAD5_1_3 23 // Stir
+#define LOAD12_1_1 25 // Pump
+#define LOAD12_1_2 24 // Pump
+#define LOAD12_1_3 23 // Stir
 
-#define LOAD5_2_1 22 // Pump
-#define LOAD5_2_2 21 // Pump
-#define LOAD5_2_3 30 // Pump
+#define LOAD12_1_4 22 // Pump
+#define LOAD12_1_5 21 // Pump
+#define LOAD12_1_6 30 // Pump
 
-#define LOAD12_1 3 // Fan1
-#define LOAD12_2 2 // Fan2
-#define LOAD12_3 0 // Centrifuge
+#define LOAD12_2_1 3 // Fan1
+#define LOAD12_2_2 2 // Fan2
+#define LOAD12_2_3 0 // Centrifuge
 
-#define CENTRIFUGE_PIN LOAD12_3
+
+#define CENTRIFUGE_PIN LOAD12_2_3
 #define FAN1_PIN LOAD12_1
 #define FAN2_PIN LOAD12_2
-#define PUMP1_PIN LOAD5_1_1
-#define PUMP2_PIN LOAD5_1_2
-#define PUMP3_PIN LOAD5_2_1
-#define PUMP4_PIN LOAD5_2_2
-#define PUMP5_PIN LOAD5_2_3
+#define PUMP1_PIN LOAD12_1_1
+#define PUMP2_PIN LOAD12_1_2
+#define PUMP3_PIN LOAD12_2_4
+#define PUMP4_PIN LOAD12_2_5
+#define PUMP5_PIN LOAD12_2_6
 
 // Fluids Pump
-#define H1A_1 5  // Out
-#define H1A_2 4  // In
+#define H1A_1 5  // In
+#define H1A_2 4  // Out
 
-#define FLUIDSPUMP_IN_PIN H1A_2
-#define FLUIDSPUMP_OUT_PIN H1A_1
+#define FLUIDSPUMP_IN_PIN H1A_1
+#define FLUIDSPUMP_OUT_PIN H1A_2
 // Column Spin
 #define H1A_3 1  //
 #define H1A_4 16
@@ -47,7 +48,7 @@
 #define LOWER_PUMP_PIN H18A_3_1
 #define RAISE_PUMP_PIN H18A_3_2
 
-// TODO: choose the wPi pin wired to the burner SSR/relay control input before building
+
 #define BURNER_PIN 0   // placeholder — update to actual wPi pin
 
 #define SDA 8

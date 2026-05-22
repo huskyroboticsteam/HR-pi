@@ -23,9 +23,9 @@ rotateServoTo: functions.c pins.h SystemsTesting/Centrifuge/rotateServoTo.c
 findVelocity: functions.c pins.h SystemsTesting/Centrifuge/findVelocity.c
 	gcc SystemsTesting/Centrifuge/findVelocity.c functions.c -lwiringPi -o ../Executables/findVelocity
 rotateTo_column: functions.c pins.h SystemsTesting/Column/rotateTo_column.c
-	gcc SystemsTesting/Column/rotateTo_column.c functions.c -lwiringPi -o ../Executables/rotateTo_column
+	gcc -DBUILD_ROTATETO_MAIN SystemsTesting/Column/rotateTo_column.c functions.c -lwiringPi -o ../Executables/rotateTo_column
 raise_lower_column: functions.c pins.h SystemsTesting/Column/raise_lower_column.c
-	gcc SystemsTesting/Column/raise_lower_column.c functions.c -lwiringPi -o ../Executables/raise_lower_column
+	gcc -DBUILD_RAISELOWER_MAIN SystemsTesting/Column/raise_lower_column.c functions.c -lwiringPi -o ../Executables/raise_lower_column
 tofTest: functions.c pins.h SystemsTesting/tof.c SystemsTesting/tofTest.c
 	gcc SystemsTesting/tofTest.c SystemsTesting/tof.c functions.c -lwiringPi -o ../Executables/tofTest
 raiseLower_pump: functions.c pins.h SystemsTesting/Pump/raiseLower_Pump.c

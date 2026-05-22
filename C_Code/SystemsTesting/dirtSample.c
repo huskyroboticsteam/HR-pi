@@ -3,8 +3,8 @@
 #include <stdint.h>
 #include <unistd.h>
 #include "../functions.h"
-#include "Column/raiselowerfunc.c"
-#include "Column/rotatetofunc.c"
+#include "Column/raise_lower_column.c"
+#include "Column/rotateTo_column.c"
 
 // FPGA PWM channel for the dirt-sample servo. Set by startup.sh (`fpwm 2 1500`).
 #define DIRT_SAMPLE_CHANNEL 2

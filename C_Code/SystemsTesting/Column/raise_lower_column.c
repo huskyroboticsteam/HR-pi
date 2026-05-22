@@ -157,6 +157,7 @@ static int raiseLowerTo(int32_t target_ticks, int raise_pin, int lower_pin) {
   return (distance_remaining > TICK_TOLERANCE) ? -1 : 0;
 }
 
+#ifdef BUILD_RAISELOWER_MAIN
 int main(int argc, char *argv[]) {
   signal(SIGINT, intHandler);
   wiringPiSetupPinType(WPI_PIN_WPI);
@@ -165,3 +166,4 @@ int main(int argc, char *argv[]) {
   int rc = raiseLowerTo((int32_t)vals[0], COLUMN_RL_PIN2, COLUMN_RL_PIN1);
   return (rc < 0) ? 1 : 0;
 }
+#endif

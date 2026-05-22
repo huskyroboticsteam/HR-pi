@@ -10,17 +10,19 @@
 #include <unistd.h>
 // #include <signal.h>
 #define CPR 663.0 / 6 // Counts per revolution
-#define DATA_ADDR ENC_COLUMN_ROTATE
+#define DATA_ADDR_ROTATE ENC_COLUMN_ROTATE
 
 // -100 is deposit position
 // 0 is home
-
-int sigint = 0;
-void intHandler(int dummy) { sigint = 1; }
+// Note: to allow for inclusion of this file and raise_lower_column.c in the same file,
+// the sigint variable and handler are duplicated here with different names. There's no
+// difference in behavior, just to avoid a redefinition error.
+int sigint2 = 0;
+void intHandler2(int dummy) { sigint2 = 1; }
 
 // Gets the encoder value
 void enc_dec(int32_t *amount, float *degrees) {
-    *amount = fpga_safetran(DATA_ADDR);
+    *amount = fpga_safetran(DATA_ADDR_ROTATE);
 //   value;
 //   *dir = value & (1 << 17);
     *degrees = (*amount * 360.0) / CPR;
@@ -57,7 +59,7 @@ int rotateTo(float target, int left, int right) {
   printf("Target: %f\nActual: %f\n", target, degrees);
   return 0;
 }
-
+#ifdef BUILD_ROTATETO_MAIN
 int main(int argc, char *argv[]) {
   signal(SIGINT, intHandler);
   wiringPiSetupPinType(WPI_PIN_WPI);
@@ -66,3 +68,4 @@ int main(int argc, char *argv[]) {
   rotateTo(vals[0], H1A_3, H1A_4);
   return 0;
 }
+#endif
