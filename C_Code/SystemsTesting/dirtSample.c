@@ -6,6 +6,7 @@
 #include "Column/raise_lower_column.c"
 #include "Column/rotateTo_column.c"
 #include "Augur/PWM_Map.c"
+#include "tofTest.c"
 
 // FPGA PWM channel for the dirt-sample servo. Set by startup.sh (`fpwm 2 1500`).
 #define DIRT_SAMPLE_CHANNEL 2
@@ -29,6 +30,10 @@
 #define AUGUR_ON 50
 #define AUGUR_OFF 0
 
+// Distance where ToF sensor considers augur done. 
+// PLACEHOLDER VALUE, CHANGE!!
+#define AUGUR_DONE_DISTANCE 100
+
 void collect_and_deposit_dirt(){
     // Move column to pickup position
     rotateTo(PICKUP_ROTATE_POSITION, H1A_3, H1A_4);
@@ -40,7 +45,12 @@ void collect_and_deposit_dirt(){
     spin_augur(AUGUR_ON);
 
     // ToF sensor to measure when augur is done
-    // Long file, need to look into this
+    int zero = zeroCalibration();
+    int distance = zero - tofReadDistance();
+    while (distance < AUGUR_DONE_DISTANCE) {
+        usleep(50000 /* 50ms, 20/sec */);
+        distance = zero - tofReadDistance();
+    }
 
     // Stop augur
     spin_augur(AUGUR_OFF);
