@@ -116,10 +116,10 @@ int main(int argc, char *argv[]){
 
     // Target color references — fill in by reading the RGB line for each target liquid
     // under final operating conditions, averaging several samples for stability.
-    #define REF_R_A 0
-    #define REF_G_A 0
-    #define REF_B_A 0
-
+    #define REF_R_A 123
+    #define REF_G_A 122
+    #define REF_B_A 90
+//  RGB  - Red: 123  Green: 122  Blue: 90
     #define REF_R_B 0
     #define REF_G_B 0
     #define REF_B_B 0
@@ -127,7 +127,7 @@ int main(int argc, char *argv[]){
     // Match threshold (Euclidean distance in 0–255 RGB space, max ~441).
     // Must be larger than the natural variation of each target and smaller than
     // half the distance between REF_A and REF_B. Tune with real data.
-    #define MATCH_THRESHOLD 40.0f
+    #define MATCH_THRESHOLD 20.0f
 
     float dr_a = rgb_r - REF_R_A, dg_a = rgb_g - REF_G_A, db_a = rgb_b - REF_B_A;
     float dr_b = rgb_r - REF_R_B, dg_b = rgb_g - REF_G_B, db_b = rgb_b - REF_B_B;
@@ -136,7 +136,7 @@ int main(int argc, char *argv[]){
     printf("Dist - A: %.1f  B: %.1f\n", dist_a, dist_b);
 
     if (dist_a < dist_b && dist_a < MATCH_THRESHOLD) {
-        printf("Match: target A\n");
+        printf("Match: target A (Dirt)\n");
     } else if (dist_b < MATCH_THRESHOLD) {
         printf("Match: target B\n");
     } else {

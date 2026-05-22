@@ -83,6 +83,7 @@ int zeroCalibration() {
     return measured;
 }
 
+#ifdef BUILD_TOFTEST_MAIN
 int main(int argc, char *argv[]) {
 	(void)argc;
 	(void)argv;
@@ -92,3 +93,4 @@ int main(int argc, char *argv[]) {
 	printf("Calibrated\n");
 	return run_tof_test(zero);
 }
+#endif

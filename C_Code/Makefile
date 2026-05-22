@@ -27,18 +27,18 @@ rotateTo_column: functions.c pins.h SystemsTesting/Column/rotateTo_column.c
 raise_lower_column: functions.c pins.h SystemsTesting/Column/raise_lower_column.c
 	gcc -DBUILD_RAISELOWER_MAIN SystemsTesting/Column/raise_lower_column.c functions.c -lwiringPi -o ../Executables/raise_lower_column
 tofTest: functions.c pins.h SystemsTesting/tof.c SystemsTesting/tofTest.c
-	gcc SystemsTesting/tofTest.c SystemsTesting/tof.c functions.c -lwiringPi -o ../Executables/tofTest
+	gcc -DBUILD_TOFTEST_MAIN SystemsTesting/tofTest.c SystemsTesting/tof.c functions.c -lwiringPi -o ../Executables/tofTest
 raiseLower_pump: functions.c pins.h SystemsTesting/Pump/raiseLower_Pump.c
 	gcc SystemsTesting/Pump/raiseLower_Pump.c functions.c -lwiringPi -o ../Executables/raiseLower_pump
 tempSensorRead: functions.c pins.h SystemsTesting/tempSensorRead.c
-	gcc SystemsTesting/tempSensorRead.c functions.c pins.h -lwiringPi -o ../Executables/tempSensorRead
+	gcc -DBUILD_TEMPREAD_MAIN SystemsTesting/tempSensorRead.c functions.c pins.h -lwiringPi -o ../Executables/tempSensorRead
 1wTempSensor: functions.c pins.h SystemsTesting/1wTempSensor.c
-	gcc SystemsTesting/1wTempSensor.c functions.c pins.h -lwiringPi -o ../Executables/1wTempSensor
+	gcc -DBUILD_1WTEMP_MAIN SystemsTesting/1wTempSensor.c functions.c pins.h -lwiringPi -o ../Executables/1wTempSensor
 PWM_Map: functions.c pins.h SystemsTesting/Augur/PWM_Map.c
-	gcc SystemsTesting/Augur/PWM_Map.c functions.c pins.h -lwiringPi -o ../Executables/PWM_Map
+	gcc -DBUILD_PWMMAP_MAIN SystemsTesting/Augur/PWM_Map.c functions.c pins.h -lwiringPi -o ../Executables/PWM_Map
 waterLevelCalibrate: SystemsTesting/WaterLevel/waterLevelCalibrate.c SystemsTesting/WaterLevel/waterLevelADS1015.c
-	gcc SystemsTesting/WaterLevel/waterLevelCalibrate.c SystemsTesting/WaterLevel/waterLevelADS1015.c -lwiringPi -o ../Executables/waterLevelCalibrate
+	gcc -DBUILD_WATERLEVELCALIBRATE_MAIN SystemsTesting/WaterLevel/waterLevelCalibrate.c SystemsTesting/WaterLevel/waterLevelADS1015.c -lwiringPi -o ../Executables/waterLevelCalibrate
 waterLevelRead: SystemsTesting/WaterLevel/waterLevelRead.c SystemsTesting/WaterLevel/waterLevelADS1015.c
-	gcc SystemsTesting/WaterLevel/waterLevelRead.c SystemsTesting/WaterLevel/waterLevelADS1015.c -lwiringPi -o ../Executables/waterLevelRead
+	gcc -DBUILD_WATERLEVELREAD_MAIN SystemsTesting/WaterLevel/waterLevelRead.c SystemsTesting/WaterLevel/waterLevelADS1015.c -lwiringPi -o ../Executables/waterLevelRead
 dirtSample: functions.c pins.h SystemsTesting/dirtSample.c 
-	gcc SystemsTesting/dirtSample.c functions.c  -lwiringPi -o ../Executables/dirtSample
+	gcc -DBUILD_DSAMPLE_MAIN SystemsTesting/dirtSample.c functions.c  -lwiringPi -o ../Executables/dirtSample

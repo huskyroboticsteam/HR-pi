@@ -53,6 +53,7 @@ void collect_and_deposit_dirt(){
     fpga_pwm_uptime(DIRT_SAMPLE_CHANNEL, DIRT_SERVO_CLOSED);
 }
 
+#ifdef BUILD_DSAMPLE_MAIN
 int main(int argc, char *argv[]) {
     int vals[argc-1];
     intparse(argc-1, argv+1, vals);
@@ -74,4 +75,4 @@ int main(int argc, char *argv[]) {
     collect_and_deposit_dirt();
     printf("Done.\n");
 }
-
+#endif

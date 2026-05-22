@@ -17,6 +17,7 @@ int32_t map_range(int32_t value,
            ((out_high - out_low) * (value - in_low)) / (in_high - in_low);
 }
 
+#ifdef BUILD_PWMMAP_MAIN
 int main(int argc, char *argv[]) {
     int vals[argc-1];
     intparse(argc-1, argv+1, vals);
@@ -35,3 +36,4 @@ int main(int argc, char *argv[]) {
     uint32_t result2 = fpga_pwm_uptime(vals[0], uptime);
     print_bin(32, result2);
 }
+#endif

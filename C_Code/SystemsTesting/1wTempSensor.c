@@ -51,6 +51,7 @@ float read_ds18b20_temp(void) {
     return temp_c;
 }
 
+#ifdef BUILD_1WTEMP_MAIN
 int main(int argc, char *argv[]) {
     if (wiringPiSetup() == -1) {
         return -1;
@@ -70,3 +71,4 @@ int main(int argc, char *argv[]) {
     
     return 0;
 }
+#endif
