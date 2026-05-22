@@ -6,7 +6,7 @@ all: getD centriAbs fpwm resetEnc toggle all_low colorRead  rotateServoTo rotate
 # rotateCBy rotateCTo findVelocity
 
 getD: functions.c pins.h FPGAtesting/Get_data.c
-	gcc FPGAtesting/Get_data.c functions.c -lwiringPi -o ../Executables/getD
+	gcc -DBUILD_GETD_MAIN FPGAtesting/Get_data.c functions.c -lwiringPi -o ../Executables/getD
 centriAbs: functions.c pins.h FPGAtesting/centriAbs.c
 	gcc -DBUILD_CENTRIABS_MAIN FPGAtesting/centriAbs.c functions.c -lwiringPi -o ../Executables/centriAbs
 fpwm: functions.c pins.h FPGAtesting/Fpwm.c
