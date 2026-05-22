@@ -9,6 +9,7 @@
 
 // Reads from ADC_Max.bin to find the range of adc counts
 // Interpolates adc readings to then find the current height of liquid in the tank
+// FOR MONITORING PURPOSES ONLY
 
 static void run_live_monitor(int fd, int channel, int num_samples, int interval_ms, float cal_max_adc) {
     float prev_avg  = -1.0f;

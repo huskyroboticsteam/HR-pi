@@ -18,12 +18,11 @@
 
 // Column rotational positions for picking up dirt and depositing it.
 #define PICKUP_ROTATE_POSITION 0
-#define DEPOSIT_ROTATE_POSITION -100
+#define DEPOSIT_ROTATE_POSITION -80
 
 // Column vertical positions for picking up dirt and depositing it.
-// PLACEHOLDER VALUES, CHANGE!!
-#define COLUMN_LOWER_POSITION -100
-#define COLUMN_RAISE_POSITION 0
+#define COLUMN_LOWER_POSITION -27000
+#define COLUMN_RAISE_POSITION -1000
 
 // PWM uptimespeeds to rotate augur at.
 #define AUGUR_ON 1300
@@ -35,6 +34,9 @@
 #define AUGUR_DONE_DISTANCE 100
 
 void collect_and_deposit_dirt(){
+    // Close sample collector
+    fpga_pwm_uptime(DIRT_SAMPLE_CHANNEL, DIRT_SERVO_CLOSED);
+
     // Move column to top
     raiseLowerTo(1000000, COLUMN_RL_PIN2, COLUMN_RL_PIN1);
     sleep(1);
@@ -54,7 +56,18 @@ void collect_and_deposit_dirt(){
     int zero = zeroCalibration();
     int distance = zero - tofReadDistance();
     while (distance < AUGUR_DONE_DISTANCE) {
+        int32_t ticks = read_position_ticks();
+        if(ticks < (COLUMN_LOWER_POSITION + 500)){
+            fprintf(stderr, "ERROR: Column encoder reading %d ticks is below expected range. Check column position and encoder.\n", ticks);
+            break;
+        }
+        int32_t distance_remaining = ticks_remaining(ticks, (ticks - 100));
+        while(distance_remaining > 5){
+            digitalWrite(COLUMN_RL_PIN1, 1);
+        }
+        digitalWrite(COLUMN_RL_PIN1, 0);
         usleep(200000 /* 2ms, 5/sec */);
+        digitalWrite(COLUMN_RL_PIN1, 0);
         distance = zero - tofReadDistance();
     }
  

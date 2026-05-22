@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include "waterLevel.h"
 
+// Useful functions that interpret ADC counts into measureable units (mm)
+
 static const struct { float pct; float mm; } CAL[] = {
     { 0.00f,  0.0f },
     { 0.48f,  5.0f },

@@ -16,7 +16,8 @@
 /* Motion monitoring: if encoder speed stays below this while still far from the
  * target, the column is treated as stuck. Tune after measuring normal cruise speed. */
 #define CONTROL_SAMPLE_US 10000
-#define MIN_SPEED_TICKS_S 650
+#define MIN_SPEED_TICKS_S_N 650
+#define MIN_SPEED_TICKS_S_P 550
 #define STALL_CONFIRM_SAMPLES 3
 #define STALL_GRACE_US 300000 /* ignore stall until the motor has had time to ramp */
 #define STALL_MIN_GAP_TICKS 12 /* do not apply stall logic when this close to target */
@@ -62,7 +63,8 @@ static long timeval_diff_usec(const struct timeval *a, const struct timeval *b) 
  * Returns 1 if measured speed magnitude is below the minimum (ticks/s).
  */
 static int column_stall_detected(float speed_ticks_s) {
-  return fabsf(speed_ticks_s) < MIN_SPEED_TICKS_S;
+  
+  return (fabsf(speed_ticks_s) < MIN_SPEED_TICKS_S_N)&&(speed_ticks_s < 0)||(fabsf(speed_ticks_s) < MIN_SPEED_TICKS_S_P)&&(speed_ticks_s > 0);
 }
 
 static int32_t ticks_remaining(int32_t ticks, int32_t target_ticks) {
@@ -144,11 +146,12 @@ static int raiseLowerTo(int32_t target_ticks, int raise_pin, int lower_pin) {
       if (stall_count >= STALL_CONFIRM_SAMPLES) {
         fprintf(stderr,
                 "ERROR: Column motion stopped: encoder speed %.4f ticks/s is "
-                "below %d ticks/s (stall / end of travel).\n",
-                speed_ticks_s, MIN_SPEED_TICKS_S);
+                "below %d or %d ticks/s (stall / end of travel).\n",
+                speed_ticks_s, MIN_SPEED_TICKS_S_P, -MIN_SPEED_TICKS_S_N);
+        printf("Column stall detected.\n");
         digitalWrite(raise_pin, 0);
         digitalWrite(lower_pin, 0);
-        break;
+        return -1;
       }
     } else {
       stall_count = 0;

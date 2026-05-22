@@ -3,6 +3,8 @@
 #include <wiringPiI2C.h>
 #include "waterLevelADS1015.h"
 
+// Handles interaction with the ADC Converter
+
 static uint16_t bswap16(uint16_t v) {
     return (uint16_t)((v >> 8) | (v << 8));
 }
