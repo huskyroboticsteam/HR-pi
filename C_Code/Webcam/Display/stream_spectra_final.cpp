@@ -134,26 +134,6 @@ double scale = (double)SCREEN_WIDTH / (660-440);
 
 
 // function return peak within a given range of wavelengths:
-vector<double> find_peak_in_range(int start, int end, vector<double> column_data, string color) {
-    // scale wavelengths to pixels
-    vector<double> data; // intensity, pixel
-    start /= scale;
-    end /= scale;
-    double peak_intensity = -1.0;
-    int wavelength_at_peak;
-    for (int x = start; x < end; x++) { //incrementing by pixels for a wavelength rane?
-        if (column_data[x] > column_data[x - 1]) {
-            peak_intensity = column_data[x];
-            wavelength_at_peak = x;
-        }
-    }
-    // scale pixel back to wavelength
-    wavelength_at_peak *= scale;
-    data.push_back(peak_intensity);
-    data.push_back(wavelength_at_peak);
-    cout << color << "Peak intensity at " << data[0] << '\n'
-                  << "at " << data[1] << "nm\n";
-}
 
 void on_quit(vector<int> averages, vector<double> dark, vector<double> light) {
 
@@ -200,114 +180,89 @@ int main(int argc,  char** argv) {
     const uint32_t scaled_height = (uint32_t)(window_scailing*height);
     printf("%i, %i, %i, %i\n", scaled_width, scaled_height, width, height);
     cv::Mat resized_image(cv::Size(scaled_width, scaled_height),CV_8UC1);
-    vector<double> dark_profile = load_calibration("dark_calibration.csv");
-    vector<double> light_profile = load_calibration("light_calibration.csv");
+    vector<double> dark_profile = load_calibration("dark_calibration_final.csv");
+    vector<double> light_profile = load_calibration("light_calibration_final.csv");
 
     int margin_left = 60;
     int counter = 0;
     int offset = 30;
     vector<int> averages(width);
-    while(true) {
-        cap >> frame;
+    cap >> frame;
+    
+    // if(frame.empty()) break;
+    cv::cvtColor(frame, frame, cv::COLOR_YUV2GRAY_YUYV);
+    for (int y = 0; y < height; y++) {
+        row = frame.ptr<uint8_t>(y);
+        for (int x = 0; x < width; x++) {
+            column_data[x] += row[x]; // Y component    
+            
+        }
+    }
+    
+    for (int ii=0; ii<width; ii++) {
+        //Avg sum of col values
+        column_data[ii]/=height;
+    }
+
+    // ticks
+    for (int i = 0; i <= 5; i++) {
+        // int percent = i * 20;
+        int percent = i * 20;
+        double y = (plot_h - offset) - (percent * (plot_h - 2*offset) / 100); //Set top/bottom bounds for y-axis tick marks //1.3 JUST WORKS 
+        //double y = (plot_h - offset)()
+
+        cv::line(plot,
+            cv::Point(margin_left - 5, y),
+            cv::Point(margin_left, y),
+            cv::Scalar(0), 1);
+
+        cv::putText(plot,
+            to_string(percent),
+            cv::Point(5, y + 5),
+            cv::FONT_HERSHEY_SIMPLEX,
+            0.4,
+            cv::Scalar(0), 1);
+    }
+    
+    int window = 10;
+    deque<double> y1_buffer, y2_buffer;
+    for(int x=1;x<width;x++) {
+
+        //regular plotting
+        double y1 = (plot_h)-((column_data[x-1]-dark_profile[x-1])*(plot_h - 2* offset))/(light_profile[x-1]-dark_profile[x-1]); 
+        double y2 = (plot_h)-((column_data[x]-dark_profile[x])*(plot_h - 2*offset))/(light_profile[x]-dark_profile[x]);
         
-        if(frame.empty()) break;
-        cv::cvtColor(frame, frame, cv::COLOR_YUV2GRAY_YUYV);
-        for (int y = 0; y < height; y++) {
-            row = frame.ptr<uint8_t>(y);
-            for (int x = 0; x < width; x++) {
-                column_data[x] += row[x]; // Y component    
-                
+        //add buffers
+        //shared plotting
+        y1_buffer.push_back(y1);
+        y2_buffer.push_back(y2);
+        if (y1_buffer.size() > window) y1_buffer.pop_front();
+        if (y2_buffer.size() > window) y2_buffer.pop_front();
+        //compute averages (shared)
+        double y1_average = accumulate(y1_buffer.begin(), y1_buffer.end(), 0.0) / y1_buffer.size();
+        double y2_average = accumulate(y2_buffer.begin(), y2_buffer.end(), 0.0) / y2_buffer.size();
+
+        //shared plotting
+        y1_average -= offset;
+        y2_average -= offset;
+        counter++;
+
+        averages = column_data;
+        cv::line(plot,
+                cv::Point((x-1),(int)(y1_average)),
+                cv::Point((x),(int)(y2_average)),    
+                cv::Scalar(0,0,0),1);  
+
+
             }
-        }
+        cv::resize(plot, resized_image, cv::Size(scaled_width, scaled_height));
+        cv::imshow("Frame", resized_image);
         
-        for (int ii=0; ii<width; ii++) {
-            //Avg sum of col values
-            column_data[ii]/=height;
-        }
+        fill(column_data.begin(), column_data.end(), 0);
+        plot.setTo(255);
+    
+    on_quit(averages, dark_profile, light_profile);
 
-        // ticks
-        for (int i = 0; i <= 5; i++) {
-            // int percent = i * 20;
-            int percent = i * 20;
-            double y = (plot_h - offset) - (percent * (plot_h - 2*offset) / 100); //Set top/bottom bounds for y-axis tick marks //1.3 JUST WORKS 
-            //double y = (plot_h - offset)()
-
-            cv::line(plot,
-                cv::Point(margin_left - 5, y),
-                cv::Point(margin_left, y),
-                cv::Scalar(0), 1);
-
-            cv::putText(plot,
-                to_string(percent),
-                cv::Point(5, y + 5),
-                cv::FONT_HERSHEY_SIMPLEX,
-                0.4,
-                cv::Scalar(0), 1);
-        }
-        
-        int window = 10;
-        deque<double> y1_buffer, y2_buffer;
-        for(int x=1;x<width;x++) {
-
-            //regular plotting
-            double y1 = (plot_h)-((column_data[x-1]-dark_profile[x-1])*(plot_h - 2* offset))/(light_profile[x-1]-dark_profile[x-1]); 
-            double y2 = (plot_h)-((column_data[x]-dark_profile[x])*(plot_h - 2*offset))/(light_profile[x]-dark_profile[x]);
-
-            //log plotting
-            // double y1 = (light_profile[x-1] - dark_profile[x-1])/(column_data[x-1]-dark_profile[x-1]); //Finding percentage of max light
-            // double y2 = (light_profile[x-1] - dark_profile[x-1])/(column_data[x-1]-dark_profile[x-1]); //Divide by ~255
-            // if ((isinf(y2)) || (y2 <= 0)) {
-            //     y1 = 100;
-            // }
-            // if ((isinf(y2)) || (y2 <= 0)) {
-            //     y2 = 100;
-            // }
-
-            
-            //add buffers
-            //shared plotting
-            y1_buffer.push_back(y1);
-            y2_buffer.push_back(y2);
-            if (y1_buffer.size() > window) y1_buffer.pop_front();
-            if (y2_buffer.size() > window) y2_buffer.pop_front();
-            //compute averages (shared)
-            double y1_average = accumulate(y1_buffer.begin(), y1_buffer.end(), 0.0) / y1_buffer.size();
-            double y2_average = accumulate(y2_buffer.begin(), y2_buffer.end(), 0.0) / y2_buffer.size();
-
-            //log plotting
-            // double absorb1 = log10(y1_average);
-            // double absorb2 = log10(y2_average);
-            // y1_average = plot_h - absorb1*(plot_h - 2*offset)/2;
-            // y2_average = plot_h - absorb1*(plot_h - 2*offset)/2;
-            // if (counter % 10000 == 0){
-            //      cout <<absorb1<< ": abs1"<<'\n';
-
-            // }
-
-            //shared plotting
-            y1_average -= offset;
-            y2_average -= offset;
-            counter++;
-
-            averages = column_data;
-            cv::line(plot,
-                    cv::Point((x-1),(int)(y1_average)),
-                    cv::Point((x),(int)(y2_average)),    
-                    cv::Scalar(0,0,0),1);  
-
-
-             }
-            cv::resize(plot, resized_image, cv::Size(scaled_width, scaled_height));
-            cv::imshow("Frame", resized_image);
-            
-            fill(column_data.begin(), column_data.end(), 0);
-            plot.setTo(255);
-            if(cv::waitKey(1) == 'q')
-                break;
-
-        }
-
-        on_quit(averages, dark_profile, light_profile);
 }
 
 

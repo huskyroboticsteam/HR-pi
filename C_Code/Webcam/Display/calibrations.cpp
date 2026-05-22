@@ -62,7 +62,10 @@ std::vector<double> calibrate(cv::VideoCapture& cap, int frames) {
                     avg[j] += curr[j];
                 }
             }
-            cout << curr[0] << ": curr" << '\n';
+            if (i % 4 = 0) {
+                cout << curr[0] << ": curr" << '\n';
+            }
+            
         }
         
     }
