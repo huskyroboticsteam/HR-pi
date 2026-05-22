@@ -51,6 +51,7 @@ void pump(int should_raise) {
   digitalWrite(LOWER_PUMP_PIN, 0);
 }
 
+#ifdef BUILD_RAISELOWERP_MAIN
 int main(int argc, char *argv[]) {
   signal(SIGINT, intHandler);
 
@@ -60,3 +61,4 @@ int main(int argc, char *argv[]) {
   pump(vals[0]);
   return 0;
 }
+#endif

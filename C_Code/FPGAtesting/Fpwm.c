@@ -5,6 +5,8 @@
 #include "../functions.h"
 //#include <signal.h>
 #define pin 23
+
+#ifdef BUILD_FPWM_MAIN
 int main(int argc, char *argv[]) {
     int vals[argc-1];
     intparse(argc-1, argv+1, vals);
@@ -15,3 +17,4 @@ int main(int argc, char *argv[]) {
     uint32_t result2=fpga_pwm_uptime(*vals, *(vals+1));
     print_bin(32,result2);
 }
+#endif

@@ -23,6 +23,7 @@ static void drive_allowed_pins_low(void) {
     }
 }
 
+#ifdef BUILD_ALL_LOW_MAIN
 int main(int argc, char *argv[]) {
     (void)argc;
     (void)argv;
@@ -30,3 +31,4 @@ int main(int argc, char *argv[]) {
     drive_allowed_pins_low();
     return 0;
 }
+#endif

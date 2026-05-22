@@ -45,7 +45,7 @@ int rotateTo(float target, int left, int right) {
   }
 
   while ((distance_remaining) > 0.5) {
-    if (sigint) {
+    if (sigint2) {
       digitalWrite(left, 0);
       digitalWrite(right, 0);
       break;
@@ -61,7 +61,7 @@ int rotateTo(float target, int left, int right) {
 }
 #ifdef BUILD_ROTATETO_MAIN
 int main(int argc, char *argv[]) {
-  signal(SIGINT, intHandler);
+  signal(SIGINT, intHandler2);
   wiringPiSetupPinType(WPI_PIN_WPI);
   int vals[argc - 1];
   intparse(argc - 1, argv + 1, vals);

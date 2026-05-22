@@ -1,10 +1,10 @@
-#define LOAD12_1_1 25 // Pump
-#define LOAD12_1_2 24 // Pump
-#define LOAD12_1_3 23 // Stir
+#define LOAD12_1_1 25 // Heating element
+#define LOAD12_1_2 24 // DNC
+#define LOAD12_1_3 23 // Pump Ninhydren
 
-#define LOAD12_1_4 22 // Pump
-#define LOAD12_1_5 21 // Pump
-#define LOAD12_1_6 30 // Pump
+#define LOAD12_1_4 22 // Pump KCL
+#define LOAD12_1_5 21 // Pump spec
+#define LOAD12_1_6 30 // Pump disposal
 
 #define LOAD12_2_1 3 // Fan1
 #define LOAD12_2_2 2 // Fan2
