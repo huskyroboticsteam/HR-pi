@@ -1,6 +1,13 @@
 // TO COMPILE:
 // gcc colorReadTest.c ../functions.c -lwiringPi -lm -o ../../Executables/colorReadTest
 
+// Reads RGB color values normalized to how much ambient (clear) light is present
+// Based on reference Dirt RGB values, calculates the distance between the read value
+// and the dirt reference to detect if a reaction has occurred
+// Outputs if a reaction has occured based on a percentage threshold,
+// as well as the percent difference from dirt to
+// colorReadTest.csv
+
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <math.h>
@@ -117,9 +124,10 @@ int main(int argc, char *argv[]){
     // Target color references — fill in by reading the RGB line for each target liquid
     // under final operating conditions, averaging several samples for stability.
     // Dirt RGB  - Red: 123  Green: 122  Blue: 90
-    #define REF_R_A 123
-    #define REF_G_A 122
-    #define REF_B_A 90
+    // RGB  - Red: 141  Green: 106  Blue: 89
+    #define REF_R_A 141
+    #define REF_G_A 106
+    #define REF_B_A 89
     // Solution RGB  - Red: 105  Green: 128  Blue: 114
     #define REF_R_B 105
     #define REF_G_B 128
@@ -151,8 +159,8 @@ int main(int argc, char *argv[]){
 
     FILE *csv = fopen("colorReadTest.csv", "w");
     if (csv) {
-        fprintf(csv, "detected,pct_diff\n");
-        fprintf(csv, "%d,%.2f\n", detected, dist_a_pct);
+        fprintf(csv, "pct_diff\n");
+        fprintf(csv, "%.2f\n", dist_a_pct);
         fclose(csv);
     }
 

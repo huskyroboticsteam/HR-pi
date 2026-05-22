@@ -10,7 +10,7 @@
 #define LOAD12_2_2 2 // Fan2
 #define LOAD12_2_3 0 // Centrifuge
 
-
+#define CHAMBER_MIX 15
 #define CENTRIFUGE_PIN LOAD12_2_3
 #define FAN1_PIN LOAD12_1
 #define FAN2_PIN LOAD12_2

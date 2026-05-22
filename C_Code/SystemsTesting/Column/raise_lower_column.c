@@ -129,10 +129,11 @@ static int raiseLowerTo(int32_t target_ticks, int raise_pin, int lower_pin) {
       digitalWrite(lower_pin, 0);
       ResetENC(ENC_COLUMN_RL_INDEX);
       ticks = read_position_ticks();
-      fprintf(stderr,
-              "Stopped: column top Hall limit reached before target "
-              "(target %d ticks, actual %d ticks). Encoder reset at top.\n",
-              target_ticks, ticks);
+      // fprintf(stderr,
+      //         "Stopped: column top Hall limit reached before target "
+      //         "(target %d ticks, actual %d ticks). Encoder reset at top.\n",
+      //         target_ticks, ticks);
+      printf("Column is at top hall limit.\n");
       break;
     }
 

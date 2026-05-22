@@ -6,8 +6,7 @@
 //#include <signal.h>
 #include "../../pins.h"
 
-// Map a value from one range to another. Used to convert speed input (-100 to 100) to PWM uptime 
-// (500 to 1500 microseconds).
+// Map a value from one range to another.
 int32_t map_range(int32_t value,
                   int32_t in_low,  int32_t in_high,
                   int32_t out_low, int32_t out_high)
@@ -21,8 +20,21 @@ int32_t map_range(int32_t value,
 
 // Spins the augur motor at the given PWM uptime. Returns the result of the FPGA 
 // command, which may be useful for debugging.
-int32_t spin_augur(int32_t uptime) {
-    return fpga_pwm_uptime(AUGUR_CHANNEL, uptime);
+int32_t spin_augur(int32_t target_uptime, int32_t curr_uptime) {
+    int32_t highuptime;
+    int32_t lowuptime;
+    if(target_uptime > curr_uptime) {
+        highuptime = target_uptime;
+        lowuptime = curr_uptime;
+    } else {
+        highuptime = curr_uptime;
+        lowuptime = target_uptime;
+    }
+    for(int i = 0; i < 100; i+=10){
+        fpga_pwm_uptime(AUGUR_CHANNEL, map_range(i, 0, 100, lowuptime, highuptime));
+        sleep(0.2 /* 200ms */);
+    }
+    return fpga_pwm_uptime(AUGUR_CHANNEL, target_uptime);
 }
 
 #ifdef BUILD_PWMMAP_MAIN
