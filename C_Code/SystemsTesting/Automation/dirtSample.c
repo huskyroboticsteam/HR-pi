@@ -17,14 +17,13 @@
 #define DIRT_SERVO_OPEN 2300
 
 // Column rotational positions for picking up dirt and depositing it.
-// PLACEHOLDER VALUES, CHANGE!!
 #define PICKUP_ROTATE_POSITION 0
-#define DEPOSIT_ROTATE_POSITION 1
+#define DEPOSIT_ROTATE_POSITION -100
 
 // Column vertical positions for picking up dirt and depositing it.
 // PLACEHOLDER VALUES, CHANGE!!
-#define COLUMN_LOWER_POSITION 0
-#define COLUMN_RAISE_POSITION 1
+#define COLUMN_LOWER_POSITION -100
+#define COLUMN_RAISE_POSITION 0
 
 // PWM uptimespeeds to rotate augur at.
 #define AUGUR_ON 1300

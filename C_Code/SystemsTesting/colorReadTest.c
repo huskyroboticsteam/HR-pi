@@ -116,14 +116,14 @@ int main(int argc, char *argv[]){
 
     // Target color references — fill in by reading the RGB line for each target liquid
     // under final operating conditions, averaging several samples for stability.
+    // Dirt RGB  - Red: 123  Green: 122  Blue: 90
     #define REF_R_A 123
     #define REF_G_A 122
     #define REF_B_A 90
-// Dirt RGB  - Red: 123  Green: 122  Blue: 90
+    // Solution RGB  - Red: 105  Green: 128  Blue: 114
     #define REF_R_B 105
     #define REF_G_B 128
     #define REF_B_B 114
-// Solution RGB  - Red: 105  Green: 128  Blue: 114
     // Match threshold (Euclidean distance in 0–255 RGB space, max ~441).
     // Must be larger than the natural variation of each target and smaller than
     // half the distance between REF_A and REF_B. Tune with real data.
@@ -136,7 +136,8 @@ int main(int argc, char *argv[]){
     printf("Dist - A: %.1f  B: %.1f\n", dist_a, dist_b);
     float dist_a_pct = (dist_a / 441.67f) * 100.0f;
     int detected = 0;
-    if (dist_a_pct < 5.0f) {
+    // detection line threshold still needs to be determined
+    if (dist_a_pct > 7.0f) {
         detected = 1;
     }
 
