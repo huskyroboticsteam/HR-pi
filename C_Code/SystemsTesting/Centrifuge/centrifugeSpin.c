@@ -8,8 +8,9 @@
 #include <unistd.h>
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
-// #include <signal.h>
-#define SPIN_CHANNEL LOAD12_3 // Centrifuge spin pin
+#include <signal.h>
+#include <stdlib.h>
+#define SPIN_CHANNEL CENTRIFUGE_PIN // Centrifuge spin pin
 #define SERVO_CHANNEL CENTRIFUGE_SERVO_CHANNEL      // FPGA PWM channel for the centrifuge servo
 #define SERVO_PERIOD 10000                      // full duty (on)
 #define SERVO_OFF 0                             // off
@@ -76,6 +77,7 @@ void spinFor(int duration_seconds) {
   digitalWrite(SPIN_CHANNEL, 1);
   sleep(duration_seconds);
   spin_off();
+  sleep(5);
   printf("Done spinning; rotating to initial position: %d\n", start_pos);
   rotateTo(start_pos);
 }

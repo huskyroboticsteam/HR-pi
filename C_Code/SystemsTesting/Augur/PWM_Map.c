@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "../../functions.h"
 //#include <signal.h>
-#define pin 23
+#include "../../pins.h"
 
 // Map a value from one range to another. Used to convert speed input (-100 to 100) to PWM uptime 
 // (500 to 1500 microseconds).
@@ -19,11 +19,11 @@ int32_t map_range(int32_t value,
            ((out_high - out_low) * (value - in_low)) / (in_high - in_low);
 }
 
-// Moves the augur motor at the given speed input (-100 to 100). Returns the result of the FPGA 
+// Spins the augur motor at the given speed input (-100 to 100). Returns the result of the FPGA 
 // command, which may be useful for debugging.
-int32_t move_augur(uint8_t motor, int32_t speed_input) {
+int32_t spin_augur(int32_t speed_input) {
     uint32_t uptime = (uint32_t)map_range(speed_input, -100, 100, 500, 1500);
-    return fpga_pwm_uptime(motor, uptime);
+    return fpga_pwm_uptime(AUGUR_CHANNEL, uptime);
 }
 
 #ifdef BUILD_PWMMAP_MAIN

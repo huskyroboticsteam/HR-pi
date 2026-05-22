@@ -123,17 +123,18 @@ int main(int argc, char *argv[]){
     #define REF_R_B 105
     #define REF_G_B 128
     #define REF_B_B 114
-// Solution RGB  - Red: 108  Green: 110  Blue: 171
+// Solution RGB  - Red: 105  Green: 128  Blue: 114
     // Match threshold (Euclidean distance in 0–255 RGB space, max ~441).
     // Must be larger than the natural variation of each target and smaller than
     // half the distance between REF_A and REF_B. Tune with real data.
-    #define MATCH_THRESHOLD 20.0f
+    #define MATCH_THRESHOLD 25.0f
 
     float dr_a = rgb_r - REF_R_A, dg_a = rgb_g - REF_G_A, db_a = rgb_b - REF_B_A;
     float dr_b = rgb_r - REF_R_B, dg_b = rgb_g - REF_G_B, db_b = rgb_b - REF_B_B;
     float dist_a = sqrtf(dr_a * dr_a + dg_a * dg_a + db_a * db_a);
     float dist_b = sqrtf(dr_b * dr_b + dg_b * dg_b + db_b * db_b);
     printf("Dist - A: %.1f  B: %.1f\n", dist_a, dist_b);
+    float dist_a_pct = (dist_a / 441.67f) * 100.0f;
 
     if (dist_a < dist_b && dist_a < MATCH_THRESHOLD) {
         printf("Match: target A (Dirt)\n");
@@ -141,6 +142,13 @@ int main(int argc, char *argv[]){
         printf("Match: target B (Reaction)\n");
     } else {
         printf("Match: none\n");
+    }
+
+    FILE *csv = fopen("colorReadTest.csv", "w");
+    if (csv) {
+        fprintf(csv, "\%Dist\n");
+        fprintf(csv, "%d,%.2f\n", dist_a_pct);
+        fclose(csv);
     }
 
     return 0;

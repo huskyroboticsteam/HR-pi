@@ -68,6 +68,7 @@
 
 // PWM Channels
 #define CENTRIFUGE_SERVO_CHANNEL 0 
+#define AUGUR_CHANNEL 1
 
 /* FPGA read channel 7: 32-bit word; bits 0–2 are three Hall inputs (1 = idle, 0 = detected). */
 #define HALL_CHANNEL 5

@@ -24,6 +24,11 @@
 #define COLUMN_LOWER_POSITION 0
 #define COLUMN_RAISE_POSITION 1
 
+// Speeds to rotate augur at.
+// PLACEHOLDER VALUES, CHANGE!!
+#define AUGUR_ON 50
+#define AUGUR_OFF 0
+
 void collect_and_deposit_dirt(){
     // Move column to pickup position
     rotateTo(PICKUP_ROTATE_POSITION, H1A_3, H1A_4);
@@ -32,13 +37,13 @@ void collect_and_deposit_dirt(){
     raiseLowerTo(COLUMN_LOWER_POSITION, COLUMN_RL_PIN2, COLUMN_RL_PIN1);
 
     // Start augur
-    // Needs work
+    spin_augur(AUGUR_ON);
 
     // ToF sensor to measure when augur is done
     // Long file, need to look into this
 
     // Stop augur
-    // Needs work
+    spin_augur(AUGUR_OFF);
 
     // Move column
     raiseLowerTo(COLUMN_RAISE_POSITION, COLUMN_RL_PIN2, COLUMN_RL_PIN1);
