@@ -41,6 +41,17 @@ float pump_delta_mm(int fd, int pin, float delta_mm, float cal_max_adc) {
                                      interval_ms, cal_max_adc);
 }
 
+float pumpToTime(int pin, float time) {
+    pinMode(pin, OUTPUT);
+    digitalWrite(pin, 1);
+
+    for(int i = 0; i < time && !signit; i += 50) {
+        usleep(50000);
+    }
+    
+    digitalWrite(pin, 0);
+}
+
 int main(int argc, char *argv[]) {
     if (argc < 3) {
         printf("Usage: %s <wPi_pin> <delta_mm>\n", argv[0]);
