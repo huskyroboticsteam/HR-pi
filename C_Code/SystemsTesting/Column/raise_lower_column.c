@@ -12,11 +12,12 @@
 #define DATA_ADDR ENC_RAISE_LOWER
 
 /* Absolute target in encoder ticks. Tune for your column. */
-#define TICK_TOLERANCE 50 /* stop when within this many ticks of target */
+#define TICK_TOLERANCE 5 /* stop when within this many ticks of target */
 /* Motion monitoring: if encoder speed stays below this while still far from the
  * target, the column is treated as stuck. Tune after measuring normal cruise speed. */
 #define CONTROL_SAMPLE_US 10000
-#define MIN_SPEED_TICKS_S 5.0f
+#define MIN_SPEED_TICKS_S_N 580
+#define MIN_SPEED_TICKS_S_P 550
 #define STALL_CONFIRM_SAMPLES 3
 #define STALL_GRACE_US 300000 /* ignore stall until the motor has had time to ramp */
 #define STALL_MIN_GAP_TICKS 12 /* do not apply stall logic when this close to target */
@@ -26,22 +27,17 @@ static void intHandler(int dummy) { sigint = 1; }
 
 /** Same SPI command as Executables/resetEnc (fpga_reset_encoder). */
 static void ResetENC(uint8_t encoder_channel) {
-  fpga_reset_encoder(encoder_channel);f
+  fpga_reset_encoder(encoder_channel);
 }
 
-static int column_top_hall_enabled(void) {
-  return (COLUMN_TOP_HALL_BIT >= 0 && COLUMN_TOP_HALL_BIT <= 2);
+int get_fpga_bit(int channel, int bit) {
+  uint32_t data = fpga_safetran(channel);
+  return (data >> bit) & 1;
 }
-
-static void column_top_hall_setup(void) { /* Hall is on FPGA channel HALL_CHANNEL; no GPIO setup. */ }
 
 /** True when the top Hall sensor reports magnet present (bit reads 0; idle is 1). */
 static int column_at_top_hall(void) {
-  if (!column_top_hall_enabled()) {
-    return 0;
-  }
-  uint32_t word = fpga_safetran((uint8_t)HALL_CHANNEL);
-  return ((word >> COLUMN_TOP_HALL_BIT) & 1u) == 0u;
+  return (get_fpga_bit(HALL_CHANNEL, COLUMN_TOP_HALL_BIT) == 0);
 }
 
 static int32_t read_position_ticks(void) { return fpga_safetran(DATA_ADDR); }
@@ -67,7 +63,8 @@ static long timeval_diff_usec(const struct timeval *a, const struct timeval *b) 
  * Returns 1 if measured speed magnitude is below the minimum (ticks/s).
  */
 static int column_stall_detected(float speed_ticks_s) {
-  return fabsf(speed_ticks_s) < MIN_SPEED_TICKS_S;
+  
+  return (fabsf(speed_ticks_s) < MIN_SPEED_TICKS_S_N)&&(speed_ticks_s < 0)||(fabsf(speed_ticks_s) < MIN_SPEED_TICKS_S_P)&&(speed_ticks_s > 0);
 }
 
 static int32_t ticks_remaining(int32_t ticks, int32_t target_ticks) {
@@ -81,7 +78,6 @@ static int32_t ticks_remaining(int32_t ticks, int32_t target_ticks) {
 static int raiseLowerTo(int32_t target_ticks, int raise_pin, int lower_pin) {
   pinMode(raise_pin, OUTPUT);
   pinMode(lower_pin, OUTPUT);
-  column_top_hall_setup();
 
   int32_t ticks = read_position_ticks();
   int32_t distance_remaining = ticks_remaining(ticks, target_ticks);
@@ -89,13 +85,15 @@ static int raiseLowerTo(int32_t target_ticks, int raise_pin, int lower_pin) {
   if (ticks < target_ticks && column_at_top_hall()) {
     ResetENC((uint8_t)DATA_ADDR);
     ticks = read_position_ticks();
-    fprintf(stderr,
-            "ERROR: Column top Hall limit active; cannot raise toward %d ticks "
-            "(current %d ticks). Encoder reset at top.\n",
-            target_ticks, ticks);
+    // Unnecessary error
+    // fprintf(stderr,
+    //         "ERROR: Column top Hall limit active; cannot raise toward %d ticks "
+    //         "(current %d ticks). Encoder reset at top.\n",
+    //         target_ticks, ticks);
     digitalWrite(raise_pin, 0);
     digitalWrite(lower_pin, 0);
-    return -1;
+    printf("Column is at top hall limit.\n");
+    return 0;
   }
 
   if (ticks > target_ticks) {
@@ -131,12 +129,13 @@ static int raiseLowerTo(int32_t target_ticks, int raise_pin, int lower_pin) {
     if (ticks < target_ticks && column_at_top_hall()) {
       digitalWrite(raise_pin, 0);
       digitalWrite(lower_pin, 0);
-      ResetENC((uint8_t)DATA_ADDR);
+      ResetENC(ENC_COLUMN_RL_INDEX);
       ticks = read_position_ticks();
-      fprintf(stderr,
-              "Stopped: column top Hall limit reached before target "
-              "(target %d ticks, actual %d ticks). Encoder reset at top.\n",
-              target_ticks, ticks);
+      // fprintf(stderr,
+      //         "Stopped: column top Hall limit reached before target "
+      //         "(target %d ticks, actual %d ticks). Encoder reset at top.\n",
+      //         target_ticks, ticks);
+      printf("Column is at top hall limit.\n");
       break;
     }
 
@@ -146,12 +145,13 @@ static int raiseLowerTo(int32_t target_ticks, int raise_pin, int lower_pin) {
       stall_count++;
       if (stall_count >= STALL_CONFIRM_SAMPLES) {
         fprintf(stderr,
-                "ERROR: Column motion stopped: encoder speed %.4f ticks/s is below "
-                "%.4f ticks/s (stall / end of travel).\n",
-                speed_ticks_s, MIN_SPEED_TICKS_S);
+                "ERROR: Column motion stopped: encoder speed %.4f ticks/s is "
+                "below %d or %d ticks/s (stall / end of travel).\n",
+                speed_ticks_s, MIN_SPEED_TICKS_S_P, -MIN_SPEED_TICKS_S_N);
+        printf("Column stall detected.\n");
         digitalWrite(raise_pin, 0);
         digitalWrite(lower_pin, 0);
-        break;
+        return -1;
       }
     } else {
       stall_count = 0;
@@ -163,6 +163,7 @@ static int raiseLowerTo(int32_t target_ticks, int raise_pin, int lower_pin) {
   return (distance_remaining > TICK_TOLERANCE) ? -1 : 0;
 }
 
+#ifdef BUILD_RAISELOWERC_MAIN
 int main(int argc, char *argv[]) {
   signal(SIGINT, intHandler);
   wiringPiSetupPinType(WPI_PIN_WPI);
@@ -171,3 +172,4 @@ int main(int argc, char *argv[]) {
   int rc = raiseLowerTo((int32_t)vals[0], COLUMN_RL_PIN2, COLUMN_RL_PIN1);
   return (rc < 0) ? 1 : 0;
 }
+#endif

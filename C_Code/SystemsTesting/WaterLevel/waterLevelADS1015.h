@@ -9,13 +9,13 @@
 
 #define OS_START        (1 << 15)
 #define MUX_AIN0_GND    (0x04 << 12)
-#define PGA_4_096V      (0x03 << 9)
+#define PGA_4_096V      (0x02 << 9)
 #define MODE_SINGLE     (1 << 8)
 #define DR_1600SPS      (0x01 << 5)
 #define COMP_DISABLE    0x03
 
 #define ADC_MAX_COUNT   2047
-#define VOLTAGE_REF     1.024f
+#define VOLTAGE_REF     2.048f
 
 #define DEFAULT_CHANNEL       0
 #define DEFAULT_NUM_SAMPLES   50

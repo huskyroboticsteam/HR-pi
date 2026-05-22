@@ -6,10 +6,16 @@
 #include <wiringPiI2C.h>
 #include "waterLevelADS1015.h"
 
+// Calibrates the adc count of the empty tank,
+// Then the tank must be filled to fully submerge the sensor
+// After a stability period, the maximum amount of adc counts
+// is recorded to ADC_Max.bin
+
 #define MAX_STABLE_THRESHOLD    2.0f
 #define MIN_ADC_MAX_COUNTS      1000
 #define MAX_STABLE_CONFIRM_CYCLES 10
 
+#ifdef BUILD_WATERLEVELCALIBRATE_MAIN
 int main() {
     int channel     = DEFAULT_CHANNEL;
     int num_samples = DEFAULT_NUM_SAMPLES;
@@ -72,3 +78,4 @@ int main() {
 
     return 0;
 }
+#endif

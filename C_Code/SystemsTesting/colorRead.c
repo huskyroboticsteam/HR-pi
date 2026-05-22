@@ -5,6 +5,8 @@
 #define DEVICE_ID 0x39
 #define COMMAND_REGISTER_BIT 0x80
 #define MULTI_BYTE_BIT 0x20
+
+#ifdef BUILD_COLORREAD_MAIN
 int main(int argc, char *argv[]){
     int vals[argc-1];
     intparse(argc, argv, vals);
@@ -80,3 +82,4 @@ int main(int argc, char *argv[]){
     // printf("Red: %d\nGreen:%d\nBlue:%d\n", redt, greent, bluet);
     return 0;
 }
+#endif

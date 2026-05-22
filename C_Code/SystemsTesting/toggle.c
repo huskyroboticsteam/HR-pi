@@ -26,6 +26,8 @@ static int run_toggle(int argc, char *argv[]) {
     return 0;
 }
 
+#ifdef BUILD_TOGGLE_MAIN
 int main(int argc, char *argv[]) {
     return run_toggle(argc, argv);
 }
+#endif

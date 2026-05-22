@@ -1,5 +1,16 @@
+// TO COMPILE:
+// gcc colorReadTest.c ../functions.c -lwiringPi -lm -o ../../Executables/colorReadTest
+
+// Reads RGB color values normalized to how much ambient (clear) light is present
+// Based on reference Dirt RGB values, calculates the distance between the read value
+// and the dirt reference to detect if a reaction has occurred
+// Outputs if a reaction has occured based on a percentage threshold,
+// as well as the percent difference from dirt to
+// colorReadTest.csv
+
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
+#include <math.h>
 #include "../functions.h"
 #define DEVICE_ID 0x39
 #define COMMAND_REGISTER_BIT 0x80
@@ -109,6 +120,53 @@ int main(int argc, char *argv[]){
 
     printf("Cal  - Red: %.3f  Green: %.3f  Blue: %.3f\n", r, g, b);
     printf("RGB  - Red: %d  Green: %d  Blue: %d\n", rgb_r, rgb_g, rgb_b);
+
+    // Target color references — fill in by reading the RGB line for each target liquid
+    // under final operating conditions, averaging several samples for stability.
+    // Dirt RGB  - Red: 123  Green: 122  Blue: 90
+    // RGB  - Red: 141  Green: 106  Blue: 89
+    #define REF_R_A 141
+    #define REF_G_A 106
+    #define REF_B_A 89
+    // Solution RGB  - Red: 105  Green: 128  Blue: 114
+    // #define REF_R_B 105
+    // #define REF_G_B 128
+    // #define REF_B_B 114
+    // Match threshold (Euclidean distance in 0–255 RGB space, max ~441).
+    // Must be larger than the natural variation of each target and smaller than
+    // half the distance between REF_A and REF_B. Tune with real data.
+    #define MATCH_THRESHOLD 25.0f
+
+    float dr_a = rgb_r - REF_R_A, dg_a = rgb_g - REF_G_A, db_a = rgb_b - REF_B_A;
+    // float dr_b = rgb_r - REF_R_B, dg_b = rgb_g - REF_G_B, db_b = rgb_b - REF_B_B;
+    float dist_a = sqrtf(dr_a * dr_a + dg_a * dg_a + db_a * db_a);
+    // float dist_b = sqrtf(dr_b * dr_b + dg_b * dg_b + db_b * db_b);
+    // printf("Dist - A: %.1f  B: %.1f\n", dist_a, dist_b);
+    printf("Dist - A: %.1f \n", dist_a);
+
+    float dist_a_pct = (dist_a / 441.67f) * 100.0f;
+    int detected = 0;
+    // detection line threshold still needs to be determined
+    if (dist_a_pct > 7.0f) {
+        detected = 1;
+    }
+
+    // if (dist_a < dist_b && dist_a < MATCH_THRESHOLD) {
+    if (dist_a < MATCH_THRESHOLD) {
+        printf("Match: target A (Dirt)\n");
+    }
+    // } else if (dist_b < MATCH_THRESHOLD) {
+    //     printf("Match: target B (Reaction)\n");
+    // } else {
+    //     printf("Match: none\n");
+    // }
+
+    FILE *csv = fopen("colorReadTest.csv", "w");
+    if (csv) {
+        fprintf(csv, "pct_diff\n");
+        fprintf(csv, "%.2f\n", dist_a_pct);
+        fclose(csv);
+    }
 
     return 0;
 }
