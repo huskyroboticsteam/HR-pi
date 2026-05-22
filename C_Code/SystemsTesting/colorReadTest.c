@@ -136,10 +136,12 @@ int main(int argc, char *argv[]){
     printf("Dist - A: %.1f  B: %.1f\n", dist_a, dist_b);
     float dist_a_pct = (dist_a / 441.67f) * 100.0f;
     int detected = 0;
+    if (dist_a_pct < 5.0f) {
+        detected = 1;
+    }
 
     if (dist_a < dist_b && dist_a < MATCH_THRESHOLD) {
         printf("Match: target A (Dirt)\n");
-        detected = 1;
     } else if (dist_b < MATCH_THRESHOLD) {
         printf("Match: target B (Reaction)\n");
     } else {
@@ -148,8 +150,8 @@ int main(int argc, char *argv[]){
 
     FILE *csv = fopen("colorReadTest.csv", "w");
     if (csv) {
-        fprintf(csv, "detected,dist_a,pct_a\n");
-        fprintf(csv, "%d,%.2f,%.2f\n", detected, dist_a, dist_a_pct);
+        fprintf(csv, "detected,pct_diff\n");
+        fprintf(csv, "%d,%.2f\n", detected, dist_a_pct);
         fclose(csv);
     }
 

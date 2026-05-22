@@ -19,10 +19,9 @@ int32_t map_range(int32_t value,
            ((out_high - out_low) * (value - in_low)) / (in_high - in_low);
 }
 
-// Spins the augur motor at the given speed input (-100 to 100). Returns the result of the FPGA 
+// Spins the augur motor at the given PWM uptime. Returns the result of the FPGA 
 // command, which may be useful for debugging.
-int32_t spin_augur(int32_t speed_input) {
-    uint32_t uptime = (uint32_t)map_range(speed_input, -100, 100, 500, 1500);
+int32_t spin_augur(int32_t uptime) {
     return fpga_pwm_uptime(AUGUR_CHANNEL, uptime);
 }
 

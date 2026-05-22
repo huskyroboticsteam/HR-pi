@@ -83,13 +83,15 @@ static int raiseLowerTo(int32_t target_ticks, int raise_pin, int lower_pin) {
   if (ticks < target_ticks && column_at_top_hall()) {
     ResetENC((uint8_t)DATA_ADDR);
     ticks = read_position_ticks();
-    fprintf(stderr,
-            "ERROR: Column top Hall limit active; cannot raise toward %d ticks "
-            "(current %d ticks). Encoder reset at top.\n",
-            target_ticks, ticks);
+    // Unnecessary error
+    // fprintf(stderr,
+    //         "ERROR: Column top Hall limit active; cannot raise toward %d ticks "
+    //         "(current %d ticks). Encoder reset at top.\n",
+    //         target_ticks, ticks);
     digitalWrite(raise_pin, 0);
     digitalWrite(lower_pin, 0);
-    return -1;
+    printf("Column is at top hall limit.\n");
+    return 0;
   }
 
   if (ticks > target_ticks) {

@@ -1,6 +1,6 @@
 #define LOAD12_1_1 25 // Heating element
 #define LOAD12_1_2 24 // DNC
-#define LOAD12_1_3 23 // Pump Ninhydren
+#define LOAD12_1_3 23 // Pump Ninhydrin
 
 #define LOAD12_1_4 22 // Pump KCL
 #define LOAD12_1_5 21 // Pump spec
@@ -14,11 +14,12 @@
 #define CENTRIFUGE_PIN LOAD12_2_3
 #define FAN1_PIN LOAD12_1
 #define FAN2_PIN LOAD12_2
-#define PUMP1_PIN LOAD12_1_1
-#define PUMP2_PIN LOAD12_1_2
-#define PUMP3_PIN LOAD12_2_4
-#define PUMP4_PIN LOAD12_2_5
-#define PUMP5_PIN LOAD12_2_6
+#define HEAT_ELEMENT_PIN LOAD12_1_1
+// #define DNC_PIN LOAD12_1_2
+#define NINHYDRIN_PIN LOAD12_1_3
+#define KCL_PIN LOAD12_1_4
+#define SPEC_PIN LOAD12_1_5
+#define DISPOSAL_PIN LOAD12_1_6
 
 // Fluids Pump
 #define H1A_1 5  // In

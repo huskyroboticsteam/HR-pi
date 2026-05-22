@@ -20,7 +20,7 @@ int get_fpga_bit(int channel, int bit) {
   return (data >> bit) & 1;
 }
 
-void pump(int should_raise) {
+void pump(int should_raise) { // 1 is up, 0 is lowered
   int active_pin = should_raise ? RAISE_PUMP_PIN : LOWER_PUMP_PIN;
 
   // The target state corresponds to the defined RAISED and LOWERED states

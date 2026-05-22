@@ -77,7 +77,7 @@ void spinFor(int duration_seconds) {
   digitalWrite(SPIN_CHANNEL, 1);
   sleep(duration_seconds);
   spin_off();
-  sleep(5);
+  sleep(5); // give time for the motor to ramp down before we rotate to start_pos
   printf("Done spinning; rotating to initial position: %d\n", start_pos);
   rotateTo(start_pos);
 }

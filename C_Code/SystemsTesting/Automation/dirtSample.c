@@ -25,16 +25,20 @@
 #define COLUMN_LOWER_POSITION 0
 #define COLUMN_RAISE_POSITION 1
 
-// Speeds to rotate augur at.
+// PWM uptimespeeds to rotate augur at.
 // PLACEHOLDER VALUES, CHANGE!!
-#define AUGUR_ON 50
-#define AUGUR_OFF 0
+#define AUGUR_ON 1300
+#define AUGUR_OFF 1500
+#define AUGUR_REVERSE 1700
 
 // Distance where ToF sensor considers augur done. 
 // PLACEHOLDER VALUE, CHANGE!!
 #define AUGUR_DONE_DISTANCE 100
 
 void collect_and_deposit_dirt(){
+    // Move column to top
+    raiseLowerTo(10000000000, COLUMN_RL_PIN2, COLUMN_RL_PIN1);
+
     // Move column to pickup position
     rotateTo(PICKUP_ROTATE_POSITION, H1A_3, H1A_4);
 
