@@ -59,6 +59,7 @@ int rotateTo(float target, int left, int right) {
   printf("Target: %f\nActual: %f\n", target, degrees);
   return 0;
 }
+
 #ifdef BUILD_ROTATETO_MAIN
 int main(int argc, char *argv[]) {
   signal(SIGINT, intHandler2);

@@ -5,6 +5,7 @@
 #include "../functions.h"
 #include "Column/raise_lower_column.c"
 #include "Column/rotateTo_column.c"
+#include "Augur/PWM_Map.c"
 
 // FPGA PWM channel for the dirt-sample servo. Set by startup.sh (`fpwm 2 1500`).
 #define DIRT_SAMPLE_CHANNEL 2
@@ -15,20 +16,20 @@
 
 // Column rotational positions for picking up dirt and depositing it.
 // PLACEHOLDER VALUES, CHANGE!!
-#define PICKUP_POSITION 0
-#define DEPOSIT_POSITION 1
+#define PICKUP_ROTATE_POSITION 0
+#define DEPOSIT_ROTATE_POSITION 1
 
 // Column vertical positions for picking up dirt and depositing it.
 // PLACEHOLDER VALUES, CHANGE!!
-#define COLUMN_LOWER 0
-#define COLUMN_RAISE 1
+#define COLUMN_LOWER_POSITION 0
+#define COLUMN_RAISE_POSITION 1
 
 void collect_and_deposit_dirt(){
     // Move column to pickup position
-    // rotateTo(0)
+    rotateTo(PICKUP_ROTATE_POSITION, H1A_3, H1A_4);
 
     // Move column down
-    // raiseLowerTo(idk)
+    raiseLowerTo(COLUMN_LOWER_POSITION, COLUMN_RL_PIN2, COLUMN_RL_PIN1);
 
     // Start augur
     // Needs work
@@ -40,10 +41,10 @@ void collect_and_deposit_dirt(){
     // Needs work
 
     // Move column
-    // raiseLowerTo(idk)
+    raiseLowerTo(COLUMN_RAISE_POSITION, COLUMN_RL_PIN2, COLUMN_RL_PIN1);
 
     // Move column to deposit position
-    // rotateTo(idk)
+    rotateTo(DEPOSIT_ROTATE_POSITION, H1A_3, H1A_4);
 
     // Open sample collector, then wait for dirt to fall out
     fpga_pwm_uptime(DIRT_SAMPLE_CHANNEL, DIRT_SERVO_OPEN);

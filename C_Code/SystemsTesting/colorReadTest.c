@@ -120,10 +120,10 @@ int main(int argc, char *argv[]){
     #define REF_G_A 122
     #define REF_B_A 90
 // Dirt RGB  - Red: 123  Green: 122  Blue: 90
-    #define REF_R_B 102
-    #define REF_G_B 111
-    #define REF_B_B 113
-// Solution RGB  - Red: 102  Green: 111  Blue: 113
+    #define REF_R_B 105
+    #define REF_G_B 128
+    #define REF_B_B 114
+// Solution RGB  - Red: 108  Green: 110  Blue: 171
     // Match threshold (Euclidean distance in 0–255 RGB space, max ~441).
     // Must be larger than the natural variation of each target and smaller than
     // half the distance between REF_A and REF_B. Tune with real data.
