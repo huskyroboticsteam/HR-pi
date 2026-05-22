@@ -26,7 +26,6 @@
 #define COLUMN_RAISE_POSITION 1
 
 // PWM uptimespeeds to rotate augur at.
-// PLACEHOLDER VALUES, CHANGE!!
 #define AUGUR_ON 1300
 #define AUGUR_OFF 1500
 #define AUGUR_REVERSE 1700
