@@ -52,3 +52,5 @@ dirtSample: functions.c pins.h SystemsTesting/Automation/dirtSample.c
 	gcc -DBUILD_DSAMPLE_MAIN SystemsTesting/Automation/dirtSample.c functions.c  -lwiringPi -o ../Executables/dirtSample
 centrifugeSpin: functions.c pins.h SystemsTesting/Centrifuge/centrifugeSpin.c
 	gcc -DBUILD_CENTRIFUGESPIN_MAIN SystemsTesting/Centrifuge/centrifugeSpin.c functions.c -lwiringPi -o ../Executables/centrifugeSpin
+centrifugeFluids: functions.c pins.h SystemsTesting/Automation/centrifugeSpin.c
+	gcc -DBUILD_CENTRIFUGEFLUIDS_MAIN SystemsTesting/Automation/centrifugeSpin.c functions.c -lwiringPi -o ../Executables/centrifugeFluids
