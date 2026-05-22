@@ -50,3 +50,5 @@ waterLevelCalibrate: SystemsTesting/WaterLevel/waterLevelCalibrate.c SystemsTest
 #	gcc -DBUILD_WATERLEVELREAD_MAIN SystemsTesting/WaterLevel/waterLevelRead.c SystemsTesting/WaterLevel/waterLevelADS1015.c -lwiringPi -o ../Executables/waterLevelRead
 dirtSample: functions.c pins.h SystemsTesting/dirtSample.c 
 	gcc -DBUILD_DSAMPLE_MAIN SystemsTesting/dirtSample.c functions.c  -lwiringPi -o ../Executables/dirtSample
+centrifugeSpin: functions.c pins.h SystemsTesting/Centrifuge/centrifugeSpin.c
+	gcc -DBUILD_CENTRIFUGESPIN_MAIN SystemsTesting/Centrifuge/centrifugeSpin.c functions.c -lwiringPi -o ../Executables/centrifugeSpin
