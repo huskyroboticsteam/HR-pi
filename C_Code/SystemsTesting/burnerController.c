@@ -24,7 +24,7 @@
 #define MAX_SENSOR_FAILS 50        // abort after this many consecutive bad reads
 #define SENSOR_ERROR -999.0f        // sentinel returned by read_ds18b20_temp() on failure
 #define MIXER_PIN 24
-#define STOP_TIME 30
+#define STOP_TIME 1800
 
 // Ctrl+C flips this flag; the main loop checks it each iteration to exit cleanly.
 static volatile sig_atomic_t sigint = 0;
@@ -121,7 +121,6 @@ int main(int argc, char *argv[]) {
         if(time(NULL) - startTime >= STOP_TIME) {
             break;
         }
-        
         float t = read_ds18b20_temp();
 
         // Sensor error path: count consecutive failures and abort if it persists.
@@ -129,14 +128,26 @@ int main(int argc, char *argv[]) {
             if (++fails >= MAX_SENSOR_FAILS) { //burner off --> on ---> poll again ---> if temp, continue main, if not repeat
                 fprintf(stderr, "\nDS18B20 read failed %d times, retrying\n", fails);
 
-                digitalWrite(BURNER_PIN, 0);
-                usleep(30000000);
-                digitalWrite(BURNER_PIN, 1);
-                usleep(30000000);
+                //turns burner off for 30 seconds (quits if runtime goes over or sigint)
+                burner_off(); heating = 0;
+                for (int i = 0; i < 30 && !sigint && time(NULL) - startTime < STOP_TIME; i++) {
+                    sleep(1);
+                }
+                //check for sigint or runtime elapsed
+                if (sigint || time(NULL) - startTime >= STOP_TIME) break;
 
+                //turns burner on for 30 seconds (quits if runtime goes over or sigint)
+                burner_on(); heating = 1;
+                for (int i = 0; i < 30 && !sigint && time(NULL) - startTime < STOP_TIME; i++) {
+                    sleep(1);
+                }
+                //check for sigint or runtime elapsed
+                if (sigint || time(NULL) - startTime >= STOP_TIME) break;
+                
+                //fails reset
                 fails = 0;
             }
-            usleep(SAMPLE_INTERVAL_US);
+            //checks if sensor is working again.
             continue;
         }
         fails = 0;  // good read — reset the failure counter
