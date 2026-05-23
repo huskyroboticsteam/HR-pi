@@ -24,7 +24,7 @@
 #define MAX_SENSOR_FAILS 50        // abort after this many consecutive bad reads
 #define SENSOR_ERROR -999.0f        // sentinel returned by read_ds18b20_temp() on failure
 #define MIXER_PIN 24
-#define STOP_TIME 1800
+#define STOP_TIME 600
 
 // Ctrl+C flips this flag; the main loop checks it each iteration to exit cleanly.
 static volatile sig_atomic_t sigint = 0;
