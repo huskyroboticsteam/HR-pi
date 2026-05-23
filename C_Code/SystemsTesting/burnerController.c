@@ -23,6 +23,7 @@
 #define SAMPLE_INTERVAL_US 500000   // 500 ms between temp reads / control updates
 #define MAX_SENSOR_FAILS 50        // abort after this many consecutive bad reads
 #define SENSOR_ERROR -999.0f        // sentinel returned by read_ds18b20_temp() on failure
+#define SENSOR_NO_READ 0.0f
 #define MIXER_PIN 4
 #define STOP_TIME 600
 
@@ -78,6 +79,89 @@ float read_ds18b20_temp(void) {
 static inline void burner_on(void)  { digitalWrite(BURNER_PIN, 1); }
 static inline void burner_off(void) { digitalWrite(BURNER_PIN, 0); }
 
+int burnerControl(int temp_c, int range, int time_s) {
+    // Register Ctrl+C handler so we can always shut the burner off on exit.
+    signal(SIGINT, intHandler);
+
+    float upper = temp_c + range;
+    float lower = temp_c - range;
+
+    // GPIO setup: use wiringPi (wPi) pin numbering, configure burner pin as output, start OFF.
+    wiringPiSetupPinType(WPI_PIN_WPI);
+    pinMode(BURNER_PIN, OUTPUT);
+    pinMode(MIXER_PIN, OUTPUT);
+    burner_off();
+
+    // Start in the heating phase (per spec: drive temp up to `upper` first).
+    int heating = 1;
+    burner_on();
+    digitalWrite(MIXER_PIN, 1);
+
+    // Main bang-bang control loop. Runs until SIGINT or repeated sensor failure.
+    int fails = 0;
+    time_t startTime = time(NULL);
+    digitalWrite(MIXER_PIN, 1);
+    while (!sigint) {
+        if(time(NULL) - startTime >= time_s) {
+            break;
+        }
+        float t = read_ds18b20_temp();
+
+        // Sensor error path: count consecutive failures and abort if it persists.
+        if (t == SENSOR_ERROR  || t == SENSOR_NO_READ) { // if t = -999.0 or 0.0 
+            if (++fails >= MAX_SENSOR_FAILS) { //burner off --> on ---> poll again ---> if temp, continue main, if not repeat
+                fprintf(stderr, "\r\033[KDS18B20 read failed %d times, retrying\n", fails);
+
+                //turns burner off for 30 seconds (quits if runtime goes over or sigint)
+
+                burner_off(); heating = 0;
+                for (int i = 0; i < 30 && !sigint && time(NULL) - startTime < time_s; i++) {
+                    printf("\r\033[KBurner OFF for %d more seconds", 30 - i);
+                    fflush(stdout);
+                    sleep(1);
+                }
+                //check for sigint or runtime elapsed
+                if (sigint || time(NULL) - startTime >= time_s) break;
+
+                //turns burner on for 30 seconds (quits if runtime goes over or sigint)
+                burner_on(); heating = 1;
+                for (int i = 0; i < 30 && !sigint && time(NULL) - startTime < time_s; i++) {
+                    printf("\r\033[KBurner ON for %d more seconds", 30 - i);
+                    fflush(stdout);
+                    sleep(1);
+                }
+                //check for sigint or runtime elapsed
+                if (sigint || time(NULL) - startTime >= time_s) break;
+                printf("\r\033[K\033[F\033[K");
+                fflush(stdout);
+                //fails reset
+                fails = 0;
+            }
+            //checks if sensor is working again.
+            usleep(SAMPLE_INTERVAL_US);
+            continue;
+        }
+        fails = 0;  // good read — reset the failure counter
+
+        // Hysteresis: only flip state at the two thresholds. Between them, leave burner alone.
+        if (heating && t >= upper)       { burner_off(); heating = 0; }  // reached upper -> stop heating
+        else if (!heating && t <= lower){ burner_on(); heating = 1; }  // cooled to target -> heat again
+
+        // Live status line; \r overwrites in place so the terminal doesn't scroll.
+        printf("\rT=%.2f C  target=%.2f  upper=%.2f lower=%.2f burner=%s   ",
+               t, temp_c, upper, lower, heating ? "ON " : "OFF");
+        fflush(stdout);
+
+        usleep(SAMPLE_INTERVAL_US);
+    }
+
+    // Any exit path (SIGINT or sensor abort) must leave the burner OFF.
+    burner_off();
+    digitalWrite(MIXER_PIN, 0);
+    printf("burner OFF, exiting\n");
+    return 0;
+}
+
 int main(int argc, char *argv[]) {
     // Register Ctrl+C handler so we can always shut the burner off on exit.
     signal(SIGINT, intHandler);
@@ -125,15 +209,16 @@ int main(int argc, char *argv[]) {
         float t = read_ds18b20_temp();
 
         // Sensor error path: count consecutive failures and abort if it persists.
-        if (t == SENSOR_ERROR) {
+        if (t == SENSOR_ERROR  || t == SENSOR_NO_READ) { // if t = -999.0 or 0.0 
             if (++fails >= MAX_SENSOR_FAILS) { //burner off --> on ---> poll again ---> if temp, continue main, if not repeat
-                fprintf(stderr, "\rDS18B20 read failed %d times, retrying", fails);
+                fprintf(stderr, "\r\033[KDS18B20 read failed %d times, retrying\n", fails);
 
                 //turns burner off for 30 seconds (quits if runtime goes over or sigint)
 
                 burner_off(); heating = 0;
                 for (int i = 0; i < 30 && !sigint && time(NULL) - startTime < STOP_TIME; i++) {
-                    printf("\n Burner off for %f seconds", i);
+                    printf("\r\033[KBurner OFF for %d more seconds", 30 - i);
+                    fflush(stdout);
                     sleep(1);
                 }
                 //check for sigint or runtime elapsed
@@ -142,11 +227,14 @@ int main(int argc, char *argv[]) {
                 //turns burner on for 30 seconds (quits if runtime goes over or sigint)
                 burner_on(); heating = 1;
                 for (int i = 0; i < 30 && !sigint && time(NULL) - startTime < STOP_TIME; i++) {
+                    printf("\r\033[KBurner ON for %d more seconds", 30 - i);
+                    fflush(stdout);
                     sleep(1);
                 }
                 //check for sigint or runtime elapsed
                 if (sigint || time(NULL) - startTime >= STOP_TIME) break;
-                
+                printf("\r\033[K\033[F\033[K");
+                fflush(stdout);
                 //fails reset
                 fails = 0;
             }
@@ -161,8 +249,8 @@ int main(int argc, char *argv[]) {
         else if (!heating && t <= lower){ burner_on(); heating = 1; }  // cooled to target -> heat again
 
         // Live status line; \r overwrites in place so the terminal doesn't scroll.
-        printf("\rT=%.2f C  target=%.2f  upper=%.2f  burner=%s   ",
-               t, target, upper, heating ? "ON " : "OFF");
+        printf("\rT=%.2f C  target=%.2f  upper=%.2f lower=%.2f burner=%s   ",
+               t, target, upper, lower, heating ? "ON " : "OFF");
         fflush(stdout);
 
         usleep(SAMPLE_INTERVAL_US);
@@ -171,6 +259,6 @@ int main(int argc, char *argv[]) {
     // Any exit path (SIGINT or sensor abort) must leave the burner OFF.
     burner_off();
     digitalWrite(MIXER_PIN, 0);
-    printf("\nburner OFF, exiting\n");
+    printf("burner OFF, exiting\n");
     return 0;
 }
