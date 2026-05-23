@@ -12,7 +12,7 @@
 // is recorded to ADC_Max.bin
 
 #define MAX_STABLE_THRESHOLD    2.0f
-#define MIN_ADC_MAX_COUNTS      1000
+#define MIN_ADC_MAX_COUNTS      500
 #define MAX_STABLE_CONFIRM_CYCLES 10
 
 #ifdef BUILD_WATERLEVELCALIBRATE_MAIN
