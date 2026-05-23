@@ -162,6 +162,7 @@ int burnerControl(int temp_c, int range, int time_s) {
     return 0;
 }
 
+#ifdef BUILD_BURNERCONTROLLER_MAIN
 int main(int argc, char *argv[]) {
     // Register Ctrl+C handler so we can always shut the burner off on exit.
     signal(SIGINT, intHandler);

@@ -3,9 +3,10 @@
 #include <wiringPiSPI.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <stdio.h>
+
 #include "../../functions.h"
 #include "../burnerController.c"
-#include "../colorReadTest.c"
 #include "../pumpToHeight.c"
 #include "../colorRead.c"
 
@@ -13,12 +14,8 @@
 #define BURNER_PIN 
 #define KCL_PIN
 #define NIH_PIN
-#define CENTRIFUGE_PUMP_PIN
-#define COLOR_SENSOR_PIN
 #define DUMP_PIN
-
-// device adresses
-#define ADS1015_ADDR 0x48
+#define SPECTROMETER_PIN
 
 // pump times
 #define KCL_PUMP_TIME
@@ -32,13 +29,13 @@
 #define BURNER_RANGE
 
 void mixingChamber() {
+    signal(SIGINT, intHandler);
     //pump KCL
     int fd = wiringPiI2CSetup(ADS1015_ADDR);
     if(fd == -1) {
         printf("Failed ot open I2c for ADS1015 at 0x%02X\n", ADS1015_ADDR);
-        return -1;
+        return;
     }
-    wiringPiSetup();
     wiringPiSetupPinType(WPI_PIN_WPI);
     pumpToTime(fd, KCL_PIN, KCL_PUMP_TIME);
 
@@ -56,6 +53,10 @@ void mixingChamber() {
     
     //dump
     pumpToTime(fd, DUMP_PIN, DUMP_TIME);
-    
-    return void;
+
+    return;
+}
+
+void main(void) {
+    return mixingChamber();
 }
