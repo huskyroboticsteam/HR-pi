@@ -50,7 +50,7 @@
 #define RAISE_PUMP_PIN H18A_3_2
 
 
-#define BURNER_PIN 0   // placeholder — update to actual wPi pin
+#define BURNER_PIN 25   // placeholder — update to actual wPi pin
 
 #define SDA 8
 #define SCL 9

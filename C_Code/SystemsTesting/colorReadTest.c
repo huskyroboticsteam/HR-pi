@@ -15,6 +15,8 @@
 #define DEVICE_ID 0x39
 #define COMMAND_REGISTER_BIT 0x80
 #define MULTI_BYTE_BIT 0x20
+
+#ifdef BUILD_COLORREADTEST_MAIN
 int main(int argc, char *argv[]){
     int vals[argc-1];
     //intparse(argc, argv, vals);
@@ -161,8 +163,10 @@ int main(int argc, char *argv[]){
     //     printf("Match: none\n");
     // }
 
-    FILE *csv = fopen("colorReadTest.csv", "w");
-    if (csv) {
+    FILE *csv = fopen("/home/robot/HR-pi/output_data/colorReadTest.csv", "w");
+    if (!csv) {
+        perror("fopen failed");
+    } else {
         fprintf(csv, "pct_diff\n");
         fprintf(csv, "%.2f\n", dist_a_pct);
         fclose(csv);
@@ -170,3 +174,4 @@ int main(int argc, char *argv[]){
 
     return 0;
 }
+#endif
