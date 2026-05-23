@@ -10,6 +10,7 @@
 #include <wiringPiSPI.h>
 #include <signal.h>
 #include <stdlib.h>
+// #include "rotateServoTo.c"
 #define SPIN_CHANNEL CENTRIFUGE_PIN // Centrifuge spin pin
 #define SERVO_CHANNEL CENTRIFUGE_SERVO_CHANNEL      // FPGA PWM channel for the centrifuge servo
 #define SERVO_PERIOD 10000                      // full duty (on)
@@ -17,13 +18,8 @@
 // #define CPR 1018                                // Counts Per Revolution of the absolute encoder
 #define ENC_ABS ENC_CENTRIFUGE_ABS
 
-static volatile int sigint = 0;
 
-static void intHandler(int dummy) {
-  (void)dummy;
-  sigint = 1;
-  digitalWrite(SPIN_CHANNEL, 0);
-}
+
 
 static void spin_off(void) {
   digitalWrite(SPIN_CHANNEL, 0);
@@ -44,9 +40,11 @@ void rotateTo(int target_pos) {
 
   // Wait until the target position is reached, 10 units before start slowing down
   while (distance_remaining > 5) {
+    #ifdef BUILD_CENTRIFUGESPIN_MAIN
     if (sigint) {
       break;
     }
+    #endif
     usleep(1E3);
     current = fpga_safetran(ENC_ABS);
     distance_remaining = abs(target_pos - current);
@@ -77,11 +75,17 @@ void spinFor(int duration_seconds) {
   digitalWrite(SPIN_CHANNEL, 1);
   sleep(duration_seconds);
   spin_off();
-  sleep(5); // give time for the motor to ramp down before we rotate to start_pos
+  sleep(3); // give time for the motor to ramp down before we rotate to start_pos
   printf("Done spinning; rotating to initial position: %d\n", start_pos);
   rotateTo(start_pos);
 }
 
+#ifdef BUILD_CENTRIFUGESPIN_MAIN
+static void intHandler(int dummy) {
+  sigint = 1;
+  digitalWrite(SPIN_CHANNEL, 0);
+}
+static volatile int sigint = 0;
 int main(int argc, char* argv[]) {
   signal(SIGINT, intHandler);
   wiringPiSetupPinType(WPI_PIN_WPI);
@@ -89,3 +93,4 @@ int main(int argc, char* argv[]) {
   intparse(argc - 1, argv + 1, vals);
   spinFor(vals[0]);
 }
+#endif

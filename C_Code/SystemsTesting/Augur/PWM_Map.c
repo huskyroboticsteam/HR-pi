@@ -5,6 +5,7 @@
 #include "../../functions.h"
 //#include <signal.h>
 #include "../../pins.h"
+#include <unistd.h>
 
 // Map a value from one range to another.
 int32_t map_range(int32_t value,
@@ -32,7 +33,7 @@ int32_t spin_augur(int32_t target_uptime, int32_t curr_uptime) {
     }
     for(int i = 0; i < 100; i+=10){
         fpga_pwm_uptime(AUGUR_CHANNEL, map_range(i, 0, 100, lowuptime, highuptime));
-        sleep(0.2 /* 200ms */);
+        usleep(200000 /* 200ms */);
     }
     return fpga_pwm_uptime(AUGUR_CHANNEL, target_uptime);
 }

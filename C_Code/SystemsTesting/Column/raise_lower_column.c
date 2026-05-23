@@ -15,11 +15,11 @@
 #define TICK_TOLERANCE 5 /* stop when within this many ticks of target */
 /* Motion monitoring: if encoder speed stays below this while still far from the
  * target, the column is treated as stuck. Tune after measuring normal cruise speed. */
-#define CONTROL_SAMPLE_US 10000
+#define CONTROL_SAMPLE_US 5000
 #define MIN_SPEED_TICKS_S_N 580
 #define MIN_SPEED_TICKS_S_P 550
 #define STALL_CONFIRM_SAMPLES 3
-#define STALL_GRACE_US 300000 /* ignore stall until the motor has had time to ramp */
+#define STALL_GRACE_US 50000 /* ignore stall until the motor has had time to ramp */
 #define STALL_MIN_GAP_TICKS 12 /* do not apply stall logic when this close to target */
 
 static int sigint = 0;
@@ -82,8 +82,8 @@ static int raiseLowerTo(int32_t target_ticks, int raise_pin, int lower_pin) {
   int32_t ticks = read_position_ticks();
   int32_t distance_remaining = ticks_remaining(ticks, target_ticks);
 
-  if (ticks < target_ticks && column_at_top_hall()) {
-    ResetENC((uint8_t)DATA_ADDR);
+  if ((ticks < target_ticks) && column_at_top_hall()) {
+    ResetENC(ENC_COLUMN_RL_INDEX);
     ticks = read_position_ticks();
     // Unnecessary error
     // fprintf(stderr,
@@ -126,7 +126,7 @@ static int raiseLowerTo(int32_t target_ticks, int raise_pin, int lower_pin) {
 
     distance_remaining = ticks_remaining(ticks, target_ticks);
 
-    if (ticks < target_ticks && column_at_top_hall()) {
+    if ((ticks < target_ticks) && column_at_top_hall()) {
       digitalWrite(raise_pin, 0);
       digitalWrite(lower_pin, 0);
       ResetENC(ENC_COLUMN_RL_INDEX);

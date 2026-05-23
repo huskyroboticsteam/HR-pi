@@ -21,7 +21,7 @@
 #define DEPOSIT_ROTATE_POSITION -80
 
 // Column vertical positions for picking up dirt and depositing it.
-#define COLUMN_LOWER_POSITION -27000
+#define COLUMN_LOWER_POSITION -36000
 #define COLUMN_RAISE_POSITION -1000
 
 // PWM uptimespeeds to rotate augur at.

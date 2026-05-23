@@ -23,7 +23,7 @@
 #define SAMPLE_INTERVAL_US 500000   // 500 ms between temp reads / control updates
 #define MAX_SENSOR_FAILS 50        // abort after this many consecutive bad reads
 #define SENSOR_ERROR -999.0f        // sentinel returned by read_ds18b20_temp() on failure
-#define MIXER_PIN 24
+#define MIXER_PIN 4
 #define STOP_TIME 600
 
 // Ctrl+C flips this flag; the main loop checks it each iteration to exit cleanly.
@@ -127,12 +127,13 @@ int main(int argc, char *argv[]) {
         // Sensor error path: count consecutive failures and abort if it persists.
         if (t == SENSOR_ERROR) {
             if (++fails >= MAX_SENSOR_FAILS) { //burner off --> on ---> poll again ---> if temp, continue main, if not repeat
-                fprintf(stderr, "\nDS18B20 read failed %d times, retrying\n", fails);
+                fprintf(stderr, "\rDS18B20 read failed %d times, retrying", fails);
 
                 //turns burner off for 30 seconds (quits if runtime goes over or sigint)
 
                 burner_off(); heating = 0;
                 for (int i = 0; i < 30 && !sigint && time(NULL) - startTime < STOP_TIME; i++) {
+                    printf("\n Burner off for %f seconds", i);
                     sleep(1);
                 }
                 //check for sigint or runtime elapsed
