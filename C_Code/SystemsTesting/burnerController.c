@@ -117,6 +117,7 @@ int main(int argc, char *argv[]) {
     // Main bang-bang control loop. Runs until SIGINT or repeated sensor failure.
     int fails = 0;
     time_t startTime = time(NULL);
+    digitalWrite(MIXER_PIN, 1);
     while (!sigint) {
         if(time(NULL) - startTime >= STOP_TIME) {
             break;
@@ -129,6 +130,7 @@ int main(int argc, char *argv[]) {
                 fprintf(stderr, "\nDS18B20 read failed %d times, retrying\n", fails);
 
                 //turns burner off for 30 seconds (quits if runtime goes over or sigint)
+
                 burner_off(); heating = 0;
                 for (int i = 0; i < 30 && !sigint && time(NULL) - startTime < STOP_TIME; i++) {
                     sleep(1);
@@ -148,13 +150,14 @@ int main(int argc, char *argv[]) {
                 fails = 0;
             }
             //checks if sensor is working again.
+            usleep(SAMPLE_INTERVAL_US);
             continue;
         }
         fails = 0;  // good read — reset the failure counter
 
         // Hysteresis: only flip state at the two thresholds. Between them, leave burner alone.
-        if (heating && t >= upper)       { burner_off(); digitalWrite(MIXER_PIN, 0); heating = 0; }  // reached upper -> stop heating
-        else if (!heating && t <= lower){ burner_on(); digitalWrite(MIXER_PIN, 1); heating = 1; }  // cooled to target -> heat again
+        if (heating && t >= upper)       { burner_off(); heating = 0; }  // reached upper -> stop heating
+        else if (!heating && t <= lower){ burner_on(); heating = 1; }  // cooled to target -> heat again
 
         // Live status line; \r overwrites in place so the terminal doesn't scroll.
         printf("\rT=%.2f C  target=%.2f  upper=%.2f  burner=%s   ",
