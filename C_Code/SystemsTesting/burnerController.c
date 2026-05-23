@@ -28,8 +28,10 @@
 #define STOP_TIME 600
 
 // Ctrl+C flips this flag; the main loop checks it each iteration to exit cleanly.
-static volatile sig_atomic_t sigint = 0;
-static void intHandler(int _) { (void)_; sigint = 1; }
+// Non-static so a caller (e.g. mixingChamberAutomation.c) can set it from its own
+// unified SIGINT handler that stops both the burner and any pump in flight.
+volatile sig_atomic_t burner_sigint = 0;
+static void intHandler(int _) { (void)_; burner_sigint = 1; }
 
 // Reads the DS18B20 temperature via the kernel 1-Wire sysfs interface.
 // Returns degrees C, or -999.0 on any failure (no device, file unreadable, etc).
@@ -80,8 +82,9 @@ static inline void burner_on(void)  { digitalWrite(BURNER_PIN, 1); }
 static inline void burner_off(void) { digitalWrite(BURNER_PIN, 0); }
 
 int burnerControl(int temp_c, int range, int time_s) {
-    // Register Ctrl+C handler so we can always shut the burner off on exit.
-    signal(SIGINT, intHandler);
+    // SIGINT handler is the caller's responsibility — they set burner_sigint.
+    // Clear any stale request from a prior phase before we start heating.
+    burner_sigint = 0;
 
     float upper = temp_c + range;
     float lower = temp_c - range;
@@ -101,7 +104,7 @@ int burnerControl(int temp_c, int range, int time_s) {
     int fails = 0;
     time_t startTime = time(NULL);
     digitalWrite(MIXER_PIN, 1);
-    while (!sigint) {
+    while (!burner_sigint) {
         if(time(NULL) - startTime >= time_s) {
             break;
         }
@@ -112,26 +115,26 @@ int burnerControl(int temp_c, int range, int time_s) {
             if (++fails >= MAX_SENSOR_FAILS) { //burner off --> on ---> poll again ---> if temp, continue main, if not repeat
                 fprintf(stderr, "\r\033[KDS18B20 read failed %d times, retrying\n", fails);
 
-                //turns burner off for 30 seconds (quits if runtime goes over or sigint)
+                //turns burner off for 30 seconds (quits if runtime goes over or burner_sigint)
 
                 burner_off(); heating = 0;
-                for (int i = 0; i < 30 && !sigint && time(NULL) - startTime < time_s; i++) {
+                for (int i = 0; i < 30 && !burner_sigint && time(NULL) - startTime < time_s; i++) {
                     printf("\r\033[KBurner OFF for %d more seconds", 30 - i);
                     fflush(stdout);
                     sleep(1);
                 }
-                //check for sigint or runtime elapsed
-                if (sigint || time(NULL) - startTime >= time_s) break;
+                //check for burner_sigint or runtime elapsed
+                if (burner_sigint || time(NULL) - startTime >= time_s) break;
 
-                //turns burner on for 30 seconds (quits if runtime goes over or sigint)
+                //turns burner on for 30 seconds (quits if runtime goes over or burner_sigint)
                 burner_on(); heating = 1;
-                for (int i = 0; i < 30 && !sigint && time(NULL) - startTime < time_s; i++) {
+                for (int i = 0; i < 30 && !burner_sigint && time(NULL) - startTime < time_s; i++) {
                     printf("\r\033[KBurner ON for %d more seconds", 30 - i);
                     fflush(stdout);
                     sleep(1);
                 }
-                //check for sigint or runtime elapsed
-                if (sigint || time(NULL) - startTime >= time_s) break;
+                //check for burner_sigint or runtime elapsed
+                if (burner_sigint || time(NULL) - startTime >= time_s) break;
                 printf("\r\033[K\033[F\033[K");
                 fflush(stdout);
                 //fails reset
@@ -203,7 +206,7 @@ int main(int argc, char *argv[]) {
     int fails = 0;
     time_t startTime = time(NULL);
     digitalWrite(MIXER_PIN, 1);
-    while (!sigint) {
+    while (!burner_sigint) {
         if(time(NULL) - startTime >= STOP_TIME) {
             break;
         }
@@ -214,26 +217,26 @@ int main(int argc, char *argv[]) {
             if (++fails >= MAX_SENSOR_FAILS) { //burner off --> on ---> poll again ---> if temp, continue main, if not repeat
                 fprintf(stderr, "\r\033[KDS18B20 read failed %d times, retrying\n", fails);
 
-                //turns burner off for 30 seconds (quits if runtime goes over or sigint)
+                //turns burner off for 30 seconds (quits if runtime goes over or burner_sigint)
 
                 burner_off(); heating = 0;
-                for (int i = 0; i < 30 && !sigint && time(NULL) - startTime < STOP_TIME; i++) {
+                for (int i = 0; i < 30 && !burner_sigint && time(NULL) - startTime < STOP_TIME; i++) {
                     printf("\r\033[KBurner OFF for %d more seconds", 30 - i);
                     fflush(stdout);
                     sleep(1);
                 }
-                //check for sigint or runtime elapsed
-                if (sigint || time(NULL) - startTime >= STOP_TIME) break;
+                //check for burner_sigint or runtime elapsed
+                if (burner_sigint || time(NULL) - startTime >= STOP_TIME) break;
 
-                //turns burner on for 30 seconds (quits if runtime goes over or sigint)
+                //turns burner on for 30 seconds (quits if runtime goes over or burner_sigint)
                 burner_on(); heating = 1;
-                for (int i = 0; i < 30 && !sigint && time(NULL) - startTime < STOP_TIME; i++) {
+                for (int i = 0; i < 30 && !burner_sigint && time(NULL) - startTime < STOP_TIME; i++) {
                     printf("\r\033[KBurner ON for %d more seconds", 30 - i);
                     fflush(stdout);
                     sleep(1);
                 }
-                //check for sigint or runtime elapsed
-                if (sigint || time(NULL) - startTime >= STOP_TIME) break;
+                //check for burner_sigint or runtime elapsed
+                if (burner_sigint || time(NULL) - startTime >= STOP_TIME) break;
                 printf("\r\033[K\033[F\033[K");
                 fflush(stdout);
                 //fails reset
@@ -263,3 +266,4 @@ int main(int argc, char *argv[]) {
     printf("burner OFF, exiting\n");
     return 0;
 }
+#endif

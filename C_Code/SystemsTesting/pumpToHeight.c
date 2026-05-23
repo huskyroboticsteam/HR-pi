@@ -28,8 +28,10 @@
 #define MIN_ADC_MAX_COUNTS      500
 #define MAX_STABLE_CONFIRM_CYCLES 10
 
-static volatile int sigint = 0;
-static void intHandler(int dummy) { sigint = 1; }
+// Non-static so a caller can set this from a unified SIGINT handler. See
+// mixingChamberAutomation.c for an example.
+volatile int pump_sigint = 0;
+static void pump_intHandler(int dummy) { pump_sigint = 1; }
 
 static uint16_t bswap16(uint16_t v) {
     return (uint16_t)((v >> 8) | (v << 8));
@@ -61,7 +63,7 @@ int ads1015_detect_change(int fd, int channel, int num_samples,
     float prev_avg = -1.0f;
 
     while (1) {
-        if (sigint) {
+        if (pump_sigint) {
             break;
         }
          
@@ -98,6 +100,8 @@ int ads1015_detect_change(int fd, int channel, int num_samples,
         prev_avg = avg;
         usleep(interval_ms * 1000);
     }
+    // SIGINT broke the loop — report "no change detected" so the caller skips the timer.
+    return 0;
 }
 
 void pumpToTime(int fd, int pin, float time_s) {
@@ -110,7 +114,7 @@ void pumpToTime(int fd, int pin, float time_s) {
         printf("Water Detected, timer started. \n");
         for (int i = 0; i < time_s; i++) {
             sleep(1);
-            if (sigint) {
+            if (pump_sigint) {
                 break;
             }
         }
@@ -131,7 +135,7 @@ int main(int argc, char *argv[]) {
     }
     int pin      = atoi(argv[1]);
     float time_s = atof(argv[2]);
-    signal(SIGINT, intHandler);
+    signal(SIGINT, pump_intHandler);
     wiringPiSetup();
     wiringPiSetupPinType(WPI_PIN_WPI);
     printf("Pumping pin %d for %.1f seconds\n", pin, time_s);
@@ -139,3 +143,4 @@ int main(int argc, char *argv[]) {
     printf("Done\n");
     return 0;
 }
+#endif
