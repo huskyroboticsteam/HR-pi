@@ -81,10 +81,10 @@ float read_ds18b20_temp(void) {
 static inline void burner_on(void)  { digitalWrite(BURNER_PIN, 1); }
 static inline void burner_off(void) { digitalWrite(BURNER_PIN, 0); }
 
-int burnerControl(int temp_c, int range, int time_s) {
-    // SIGINT handler is the caller's responsibility — they set burner_sigint.
-    // Clear any stale request from a prior phase before we start heating.
-    burner_sigint = 0;
+int burnerControl(float temp_c, float range, int time_s) {
+    // SIGINT handler is the caller's responsibility. We DO NOT clear burner_sigint
+    // here — if a caller hit Ctrl+C during an earlier phase, the flag should still
+    // be set so this function exits immediately rather than running the full duration.
 
     float upper = temp_c + range;
     float lower = temp_c - range;

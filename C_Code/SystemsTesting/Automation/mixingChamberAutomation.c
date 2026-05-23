@@ -19,6 +19,18 @@ static void mc_intHandler(int _) {
     pump_sigint = 1;
 }
 
+// Called between phases: if a Ctrl+C arrived during the previous step, shut off
+// the mixer (the only shared GPIO this function owns) and tell the caller to bail.
+// Pumps and burnerControl each turn their own outputs off on exit.
+static int mc_should_abort(void) {
+    if (pump_sigint || burner_sigint) {
+        digitalWrite(MIXER_PIN, 0);
+        printf("\nAborted by SIGINT.\n");
+        return 1;
+    }
+    return 0;
+}
+
 // pump times
 #define KCL_PUMP_TIME
 #define NIH_PUMP_TIME
@@ -47,25 +59,28 @@ void mixingChamber() {
     digitalWrite(MIXER_PIN, 1);
 
     pumpToTime(fd, KCL_PIN, KCL_PUMP_TIME);
+    if (mc_should_abort()) return;
 
     digitalWrite(MIXER_PIN, 0);
 
     //spectromter
     pumpToTime(fd, SPEC_PIN, SPECTROMETER_PUMP_TIME);
+    if (mc_should_abort()) return;
 
     //pump NiH
     pumpToTime(fd, NINHYDRIN_PIN, NIH_PUMP_TIME);
+    if (mc_should_abort()) return;
 
     //turn on burner for --- time
     burnerControl(BURNER_TEMP, BURNER_RANGE, BURNER_HEAT_TIME);
+    if (mc_should_abort()) return;
 
     //color sensor
     runColorRead();
+    if (mc_should_abort()) return;
 
     //dump
     pumpToTime(fd, DISPOSAL_PIN, DUMP_TIME);
-
-    return;
 }
 
 int main(void) {
