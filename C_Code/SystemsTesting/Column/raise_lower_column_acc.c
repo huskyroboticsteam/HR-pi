@@ -13,13 +13,15 @@
 
 /* Absolute target in encoder ticks. Tune for your column. */
 #define TICK_TOLERANCE 5 /* stop when within this many ticks of target */
-/* Motion monitoring: if encoder speed stays below this while still far from the
- * target, the column is treated as stuck. Tune after measuring normal cruise speed. */
+/* Motion monitoring: if encoder deceleration exceeds this while still far from
+ * the target, the column is treated as at end of travel. Tune on hardware. */
 #define CONTROL_SAMPLE_US 5000
-#define MIN_SPEED_TICKS_S_N 690
-#define MIN_SPEED_TICKS_S_P 550
-#define STALL_CONFIRM_SAMPLES 10
-#define STALL_GRACE_US 300000 /* ignore stall until the motor has had time to ramp */
+/* Deceleration monitoring: end move when encoder speed drops sharply (mechanical
+ * stop / end of travel). Tune after measuring normal cruise deceleration. */
+#define MAX_DECEL_TICKS_S2 4000.0f
+#define MIN_VEL_FOR_DECEL_TICKS_S 80.0f /* ignore until |v| is above noise */
+#define STALL_CONFIRM_SAMPLES 2
+#define STALL_GRACE_US 50000 /* ignore stall until the motor has had time to ramp */
 #define STALL_MIN_GAP_TICKS 12 /* do not apply stall logic when this close to target */
 
 static int sigint = 0;
@@ -31,16 +33,8 @@ static void ResetENC(uint8_t encoder_channel) {
 }
 
 int get_fpga_bit(int channel, int bit) {
-  uint8_t res=0;
-  for (int i=0; i<50; i++){
-    uint32_t data = fpga_safetran(channel);
-    res = (data >> bit) & 1;
-    if (res==1){
-      return 1;
-    }
-    usleep(2000);
-  }
-  return res;
+  uint32_t data = fpga_safetran(channel);
+  return (data >> bit) & 1;
 }
 
 /** True when the top Hall sensor reports magnet present (bit reads 0; idle is 1). */
@@ -48,9 +42,7 @@ static int column_at_top_hall(void) {
   return (get_fpga_bit(HALL_CHANNEL, COLUMN_TOP_HALL_BIT) == 0);
 }
 
-static int32_t read_position_ticks(void) { 
-    return fpga_safetran(DATA_ADDR); 
-  }
+static int32_t read_position_ticks(void) { return fpga_safetran(DATA_ADDR); }
 
 /**
  * Instantaneous encoder speed from two samples (ticks/s).
@@ -70,12 +62,25 @@ static long timeval_diff_usec(const struct timeval *a, const struct timeval *b) 
 }
 
 /**
- * Returns 1 if measured speed magnitude is below the minimum (ticks/s).
+ * Returns 1 when acceleration opposes motion and magnitude exceeds the limit
+ * (column is slowing down excessively).
  */
-static int column_stall_detected(float speed_ticks_s) {
-  uint8_t downstall = ((fabsf(speed_ticks_s) < MIN_SPEED_TICKS_S_N)&&(speed_ticks_s < 0));
-  uint8_t upstall = ((fabsf(speed_ticks_s) < MIN_SPEED_TICKS_S_P)&&(speed_ticks_s > 0));
-  return downstall||upstall;
+static float column_acceleration_ticks_s2(float vel_now, float vel_before,
+                                          long elapsed_usec) {
+  if (elapsed_usec <= 0) {
+    return 0.0f;
+  }
+  return (vel_now - vel_before) * (1000000.0f / (float)elapsed_usec);
+}
+
+static int column_excessive_slowdown(float accel_ticks_s2, float vel_ticks_s) {
+  if (fabsf(vel_ticks_s) < MIN_VEL_FOR_DECEL_TICKS_S) {
+    return 0;
+  }
+  if (accel_ticks_s2 * vel_ticks_s >= 0.0f) {
+    return 0;
+  }
+  return fabsf(accel_ticks_s2) > MAX_DECEL_TICKS_S2;
 }
 
 static int32_t ticks_remaining(int32_t ticks, int32_t target_ticks) {
@@ -115,9 +120,11 @@ static int raiseLowerTo(int32_t target_ticks, int raise_pin, int lower_pin) {
     digitalWrite(lower_pin, 0);
   }
 
-  struct timeval move_start, tv_a, tv_b;
+  struct timeval move_start, tv_a, tv_b, prev_vel_time;
   gettimeofday(&move_start, NULL);
   int stall_count = 0;
+  float prev_velocity = 0.0f;
+  int have_prev_velocity = 0;
 
   while (distance_remaining > TICK_TOLERANCE) {
     if (sigint) {
@@ -133,6 +140,15 @@ static int raiseLowerTo(int32_t target_ticks, int raise_pin, int lower_pin) {
     gettimeofday(&tv_b, NULL);
     long elapsed = timeval_diff_usec(&tv_a, &tv_b);
     float speed_ticks_s = column_velocity_ticks_s(ticks_start, ticks, elapsed);
+    float accel_ticks_s2 = 0.0f;
+    if (have_prev_velocity) {
+      long vel_dt = timeval_diff_usec(&prev_vel_time, &tv_b);
+      accel_ticks_s2 =
+          column_acceleration_ticks_s2(speed_ticks_s, prev_velocity, vel_dt);
+    }
+    prev_velocity = speed_ticks_s;
+    prev_vel_time = tv_b;
+    have_prev_velocity = 1;
     long since_start_us = timeval_diff_usec(&move_start, &tv_b);
 
     distance_remaining = ticks_remaining(ticks, target_ticks);
@@ -152,13 +168,14 @@ static int raiseLowerTo(int32_t target_ticks, int raise_pin, int lower_pin) {
 
     if (since_start_us >= (long)STALL_GRACE_US &&
         distance_remaining > STALL_MIN_GAP_TICKS &&
-        column_stall_detected(speed_ticks_s)&&((ticks<-5000)||!(speed_ticks_s<0))) {
+        column_excessive_slowdown(accel_ticks_s2, speed_ticks_s)) {
       stall_count++;
       if (stall_count >= STALL_CONFIRM_SAMPLES) {
         fprintf(stderr,
-                "ERROR: Column motion stopped: encoder speed %.4f ticks/s is "
-                "below %d or %d ticks/s (stall / end of travel).\n",
-                speed_ticks_s, MIN_SPEED_TICKS_S_P, -MIN_SPEED_TICKS_S_N);
+                "ERROR: Column motion stopped: encoder deceleration %.1f "
+                "ticks/s^2 exceeds %.1f ticks/s^2 at speed %.1f ticks/s "
+                "(stall / end of travel).\n",
+                accel_ticks_s2, MAX_DECEL_TICKS_S2, speed_ticks_s);
         printf("Column stall detected.\n");
         digitalWrite(raise_pin, 0);
         digitalWrite(lower_pin, 0);

@@ -1,10 +1,12 @@
 #include <opencv2/opencv.hpp>
+#include <wiringPi.h>
 #include <iostream>
 #include <fstream>
 #include <vector>
 
 #include <thread>
 #include <chrono>
+#include "../../pins.h"
 using namespace std;
 //To Compile:
 //g++ calibrations.cpp -o calib `pkg-config --cflags --libs opencv4`
@@ -62,7 +64,7 @@ std::vector<double> calibrate(cv::VideoCapture& cap, int frames) {
                     avg[j] += curr[j];
                 }
             }
-            if (i % 4 = 0) {
+            if (i % 4 == 0) {
                 cout << curr[0] << ": curr" << '\n';
             }
             
@@ -108,10 +110,15 @@ int main(int argc, char** argv) {
     cap.set(cv::CAP_PROP_FPS, 5);
     cap.set(cv::CAP_PROP_CONVERT_RGB, 0);
 
+    pinMode(SPEC_LED, OUTPUT);
+
     //Dark cali
 
     std::cout<< "Cover the lens for dark calibration...\n";
     std::this_thread::sleep_for(std::chrono::seconds(5)); // give time to cover lens
+
+    digitalWrite(SPEC_LED, 0);
+    delay(100);
 
     std::vector<double> dark = calibrate(cap, 50);
 
@@ -124,6 +131,9 @@ int main(int argc, char** argv) {
 
     std::cout << "Expose the lens to light...\n";
     std::this_thread::sleep_for(std::chrono::seconds(7)); // give time to cover lens
+
+    digitalWrite(SPEC_LED, 1);
+    delay(100);
 
     std::vector<double> light = calibrate(cap, 50);
 

@@ -1,4 +1,4 @@
-all: getD getRaw centriAbs fpwm softPWM resetEnc toggle all_low colorReadTest rotateServoTo rotateTo_column raise_lower_column tofTest raiseLower_pump tempSensorRead 1wTempSensor PWM_Map pumpToHeight dirtSample centrifugeSpin centrifugeFluids burnerController stream_spec_final
+all: getD getRaw centriAbs fpwm softPWM resetEnc toggle all_low colorReadTest rotateServoTo rotateTo_column raise_lower_column tofTest raiseLower_pump tempSensorRead 1wTempSensor PWM_Map pumpToHeight dirtSample burnerController stream_spec_final
 # Temporarily disabled:
 # waterLevelRead
 
@@ -25,10 +25,16 @@ colorReadTest: functions.c pins.h SystemsTesting/colorReadTest.c
 	gcc -DBUILD_COLORREADTEST_MAIN SystemsTesting/colorReadTest.c functions.c -lwiringPi -lm -o ../Executables/colorRead
 rotateServoTo: functions.c pins.h SystemsTesting/Centrifuge/rotateServoTo.c
 	gcc -DBUILD_ROTATESERVO_MAIN SystemsTesting/Centrifuge/rotateServoTo.c functions.c -lwiringPi -o ../Executables/rotateServoTo
+
+
 rotateTo_column: functions.c pins.h SystemsTesting/Column/rotateTo_column.c
 	gcc -DBUILD_ROTATETO_MAIN SystemsTesting/Column/rotateTo_column.c functions.c -lwiringPi -o ../Executables/rotateTo_column
 raise_lower_column: functions.c pins.h SystemsTesting/Column/raise_lower_column.c
 	gcc -DBUILD_RAISELOWERC_MAIN SystemsTesting/Column/raise_lower_column.c functions.c -lwiringPi -o ../Executables/raise_lower_column
+raise_lower_column_acc: functions.c pins.h SystemsTesting/Column/raise_lower_column_acc.c
+	gcc -DBUILD_RAISELOWERC_MAIN SystemsTesting/Column/raise_lower_column_acc.c functions.c -lwiringPi -o ../Executables/raise_lower_column_acc
+
+
 tofTest: functions.c pins.h SystemsTesting/tof.c SystemsTesting/tofTest.c
 	gcc -DBUILD_TOFTEST_MAIN SystemsTesting/tofTest.c SystemsTesting/tof.c functions.c -lwiringPi -o ../Executables/tofTest
 raiseLower_pump: functions.c pins.h SystemsTesting/Pump/raiseLower_Pump.c
@@ -47,11 +53,13 @@ pumpToHeight: SystemsTesting/pumpToHeight.c
 # 	gcc -DBUILD_WATERLEVELREAD_MAIN SystemsTesting/WaterLevel/waterLevelRead.c SystemsTesting/WaterLevel/waterLevelADS1015.c SystemsTesting/WaterLevel/waterLevel.c -lwiringPi -o ../Executables/waterLevelRead
 dirtSample: functions.c pins.h SystemsTesting/Automation/dirtSample.c 
 	gcc -DBUILD_DSAMPLE_MAIN SystemsTesting/Automation/dirtSample.c functions.c  -lwiringPi -o ../Executables/dirtSample
-centrifugeSpin: functions.c pins.h SystemsTesting/Centrifuge/centrifugeSpin.c
-	gcc -DBUILD_CENTRIFUGESPIN_MAIN SystemsTesting/Centrifuge/centrifugeSpin.c functions.c -lwiringPi -o ../Executables/centrifugeSpin
-centrifugeFluids: functions.c pins.h SystemsTesting/Automation/centrifugeFluids.c
-	gcc -DBUILD_CENTRIFUGEFLUIDS_MAIN SystemsTesting/Automation/centrifugeFluids.c functions.c -lwiringPi -o ../Executables/centrifugeFluids
+# centrifugeSpin: functions.c pins.h SystemsTesting/Centrifuge/centrifugeSpin.c
+# 	gcc -DBUILD_CENTRIFUGESPIN_MAIN SystemsTesting/Centrifuge/centrifugeSpin.c functions.c -lwiringPi -o ../Executables/centrifugeSpin
+# centrifugeFluids: functions.c pins.h SystemsTesting/Automation/centrifugeFluids.c
+# 	gcc -DBUILD_CENTRIFUGEFLUIDS_MAIN SystemsTesting/Automation/centrifugeFluids.c functions.c -lwiringPi -o ../Executables/centrifugeFluids
 burnerController: functions.c pins.h SystemsTesting/burnerController.c
 	gcc SystemsTesting/burnerController.c functions.c -lwiringPi -o ../Executables/burnerController
 stream_spec_final:
 	g++ Webcam/Display/stream_spectra_final.cpp -o ../Executables/stream_spec_final `pkg-config --cflags --libs opencv4`
+colorRead: functions.c pins.h SystemsTesting/colorRead.c
+	gcc SystemsTesting/colorRead.c functions.c -lwiringPi -lm -o ../Executables/colorRead

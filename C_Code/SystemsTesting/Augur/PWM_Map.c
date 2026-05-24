@@ -21,18 +21,11 @@ int32_t map_range(int32_t value,
 
 // Spins the augur motor at the given PWM uptime. Returns the result of the FPGA 
 // command, which may be useful for debugging.
-int32_t spin_augur(int32_t target_uptime, int32_t curr_uptime) {
-    int32_t highuptime;
-    int32_t lowuptime;
-    if(target_uptime > curr_uptime) {
-        highuptime = target_uptime;
-        lowuptime = curr_uptime;
-    } else {
-        highuptime = curr_uptime;
-        lowuptime = target_uptime;
-    }
+int32_t spin_augur(int32_t curr_uptime, int32_t target_uptime) {
+    // int32_t highuptime;
+    // int32_t lowuptime;
     for(int i = 0; i < 100; i+=10){
-        fpga_pwm_uptime(AUGUR_CHANNEL, map_range(i, 0, 100, lowuptime, highuptime));
+        fpga_pwm_uptime(AUGUR_CHANNEL, curr_uptime+((target_uptime-curr_uptime)/100.0f)*i);
         usleep(200000 /* 200ms */);
     }
     return fpga_pwm_uptime(AUGUR_CHANNEL, target_uptime);

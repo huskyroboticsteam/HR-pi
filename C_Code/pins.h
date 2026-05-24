@@ -79,3 +79,5 @@
 #define FLUIDS_HALL_TOP 1
 #define FLUIDS_HALL_BOTTOM 2
 
+// Spectrometer LED
+#define SPEC_LED 0 // <-- replace with actual pin number
