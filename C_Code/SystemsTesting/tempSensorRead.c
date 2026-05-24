@@ -69,6 +69,14 @@ static int run_temp_reading(void) {
     if (aht_read(&temperature, &humidity) == 0) {
         printf("Temperature: %.2f C\n", temperature);
         printf("Humidity: %.2f %%RH\n", humidity);
+        FILE *csv = fopen("/home/robot/HR-pi/output_data/TempAndHumidity.csv", "w");
+        if (!csv) {
+            perror("fopen failed");
+        } else {
+            fprintf(csv, "Temperature, Humidity\n");
+            fprintf(csv, "%.2f, %.2f\n", temperature, humidity);
+            fclose(csv);
+        }
         return 0;
     }
     printf("Reading Error\n");

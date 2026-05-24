@@ -1,6 +1,4 @@
-all: getD getRaw centriAbs fpwm softPWM resetEnc toggle all_low colorReadTest rotateServoTo rotateTo_column raise_lower_column tofTest raiseLower_pump tempSensorRead 1wTempSensor PWM_Map pumpToHeight dirtSample burnerController stream_spec_final
-# Temporarily disabled:
-# waterLevelRead
+all: getD getRaw centriAbs fpwm softPWM resetEnc toggle all_low colorReadTest rotateServoTo rotateTo_column raise_lower_column tofTest raiseLower_pump tempSensorRead 1wTempSensor PWM_Map pumpToHeight dirtSample centrifugeSpin centrifugeFluids burnerController stream_spec_final # waterLevelRead
 
 # OLD:
 # rotateCBy rotateCTo findVelocity
