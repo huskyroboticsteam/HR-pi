@@ -8,6 +8,8 @@
 #include <thread>
 #include <chrono>
 #include "../../pins.h"
+#include <unistd.h>
+#include <wiringPi.h>
 using namespace std;
 //To Compile:
 //g++ calibrations.cpp -o calib `pkg-config --cflags --libs opencv4`
@@ -90,7 +92,7 @@ int main(int argc, char** argv) {
     // Allow camera path like your main file (e.g. /dev/video0)
     // For fluorescent light use input video20 (/dev/video20)
     const char* device = (argc > 1) ? argv[1] : "0";
-
+    wiringPiSetupPinType(WPI_PIN_WPI);
     // 
     std::string arg1 = argv[1];
 
@@ -128,7 +130,7 @@ int main(int argc, char** argv) {
     std::vector<double> dark = calibrate(cap, 50);
 
     // saves calibration data to different file name depending on camera input
-    save_calibration(dark, "dark_calibration.csv");
+    save_calibration(dark, "/home/robot/HR-pi/calibration_data/dark_calibration_final.csv");
 
     std::cout << "Saved dark_calibration.csv\n";
 
@@ -143,7 +145,7 @@ int main(int argc, char** argv) {
 
     std::vector<double> light = calibrate(cap, 50);
 
-    save_calibration(light, "light_calibration.csv");
+    save_calibration(light, "/home/robot/HR-pi/calibration_data/light_calibration_final.csv");
 
     std::cout << "Saved light_calibration.csv\n";
     

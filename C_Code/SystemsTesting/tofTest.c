@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
 	(void)argv;
 	init();
 	usleep(500000);
-	int zero = zeroCalibration();
+	int zero = 0;//zeroCalibration();
 	printf("Calibrated\n");
 	return run_tof_test(zero);
 }

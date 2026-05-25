@@ -15,9 +15,9 @@ static int not_in(int num, int *list, int len) {
 /* General code file I use to generate all set all commands */
 static void drive_allowed_pins_low(void) {
     fpga_pwm_uptime(1,1500);
-    int not_list[7] = {SDA, SCL, MOSI, MISO, SCLK, CE, ONEWIRE};
+    int not_list[9] = {SDA, SCL, MOSI, MISO, SCLK, CE, ONEWIRE, 2, 3};
     for (int i = 0; i < 32; i++) {
-        if (not_in(i, not_list, 7)) {
+        if (not_in(i, not_list, 9)) {
             pinMode(i, OUTPUT);
             digitalWrite(i, 0);
         }
