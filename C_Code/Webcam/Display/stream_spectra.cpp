@@ -192,7 +192,6 @@ int main(int argc,  char** argv) {
     int plot_h = 540;
     cv::Mat output_im(cv::Size(width, height),CV_8UC1);
     cv::Mat plot(plot_h, width, CV_8UC1, cv::Scalar(255));
-    cv::namedWindow("Frame", cv::WINDOW_NORMAL);
     const double horiz_scale = (SCREEN_WIDTH/width);
     const double vert_scale = (SCREEN_HEIGHT/height);
     const double window_scailing = horiz_scale>vert_scale ? vert_scale : horiz_scale;
