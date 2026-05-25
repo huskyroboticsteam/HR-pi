@@ -21,6 +21,10 @@
 #define DEFAULT_NUM_SAMPLES   50
 #define DEFAULT_INTERVAL_MS   100
 
-int16_t ads1015_read(int fd, int channel);
+#define MAX_STABLE_THRESHOLD    5.0f
+#define MIN_ADC_MAX_COUNTS      500
+#define MAX_STABLE_CONFIRM_CYCLES 10
 
+int16_t ads1015_read(int fd, int channel);
+int ads1015_detect_change(int fd, int channel, int num_samples, int interval_ms, float threshold, int confirm_cycles);
 #endif

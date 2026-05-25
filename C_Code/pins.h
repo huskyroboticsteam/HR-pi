@@ -50,7 +50,7 @@
 #define RAISE_PUMP_PIN H18A_3_2
 
 
-#define BURNER_PIN 0   // placeholder — update to actual wPi pin
+#define BURNER_PIN 25   // placeholder — update to actual wPi pin
 
 #define SDA 8
 #define SCL 9
@@ -79,3 +79,5 @@
 #define FLUIDS_HALL_TOP 1
 #define FLUIDS_HALL_BOTTOM 2
 
+// Spectrometer LED
+#define SPEC_LED 0 // <-- replace with actual pin number

@@ -2,27 +2,29 @@
 #include <wiringPiSPI.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <stdio.h>
 #include "../../functions.h"
 #include "../Column/raise_lower_column.c"
 #include "../Column/rotateTo_column.c"
 #include "../Augur/PWM_Map.c"
 #include "../tof.c" // No idea why this requries the c file, but the h file doesn't work for some reason.
 #include "../tofTest.c"
+#include <sys/param.h>
 
 // FPGA PWM channel for the dirt-sample servo. Set by startup.sh (`fpwm 2 1500`).
 #define DIRT_SAMPLE_CHANNEL 2
 
 // Two encoded positions for dirt sample servo, in microseconds of PWM uptime (servo pulse width).
-#define DIRT_SERVO_CLOSED 2500
-#define DIRT_SERVO_OPEN 2300
+#define DIRT_SERVO_CLOSED 2550
+#define DIRT_SERVO_OPEN 2200
 
 // Column rotational positions for picking up dirt and depositing it.
 #define PICKUP_ROTATE_POSITION 0
-#define DEPOSIT_ROTATE_POSITION -80
+#define DEPOSIT_ROTATE_POSITION -90
 
 // Column vertical positions for picking up dirt and depositing it.
-#define COLUMN_LOWER_POSITION -27000
-#define COLUMN_RAISE_POSITION -1000
+#define COLUMN_LOWER_POSITION -36000
+#define COLUMN_RAISE_POSITION 100
 
 // PWM uptimespeeds to rotate augur at.
 #define AUGUR_ON 1300
@@ -31,50 +33,78 @@
 
 // Distance where ToF sensor considers augur done. 
 // PLACEHOLDER VALUE, CHANGE!!
-#define AUGUR_DONE_DISTANCE 100
+#define AUGUR_DONE_DISTANCE 1
 
 void collect_and_deposit_dirt(){
     // Close sample collector
     fpga_pwm_uptime(DIRT_SAMPLE_CHANNEL, DIRT_SERVO_CLOSED);
-
+    printf("Closed dirt sample channel\n");
     // Move column to top
-    raiseLowerTo(1000000, COLUMN_RL_PIN2, COLUMN_RL_PIN1);
-    sleep(1);
+    // raiseLowerTo(1000000, COLUMN_RL_PIN2, COLUMN_RL_PIN1);
+    // printf("Moved column to top\n");
+    // sleep(1);
 
-    // Move column to pickup position
+    // Rotated column to pickup position
     rotateTo(PICKUP_ROTATE_POSITION, H1A_3, H1A_4);
+    printf("Rotated column to pickup position\n");
     sleep(1);
 
     // Move column down
     raiseLowerTo(COLUMN_LOWER_POSITION, COLUMN_RL_PIN2, COLUMN_RL_PIN1);
+    printf("Moved column to pickup\n");
     sleep(1);
 
     // Start augur
     spin_augur(AUGUR_OFF, AUGUR_ON);
 
+    puts("Augur on");
     // ToF sensor to measure when augur is done
+    if (init()==-1){
+        fprintf(stderr, "ERROR: TOF failed to connect");
+    }
+
     int zero = zeroCalibration();
     int distance = zero - tofReadDistance();
     int32_t ground = read_position_ticks(); // NOTE: Each tick is ~0.012mm.
-    while (distance < AUGUR_DONE_DISTANCE) {
-        int32_t ticks = read_position_ticks(); // Get augur position
-        if(ticks < (COLUMN_LOWER_POSITION + 500)){ //Make sure augur is not too low
-            fprintf(stderr, "ERROR: Column encoder reading %d ticks is below expected range. "
-                 "Check column position and encoder.\n", ticks);
-            break;
-        }
-        if((ground - ticks) > 8333){ // If augur has moved 10cm (8333 ticks) down, stop. Otherwise, dig down.
-            int32_t distance_remaining = ticks_remaining(ticks, (ticks - 100));
-            while(distance_remaining > 5){
+    // while (distance < AUGUR_DONE_DISTANCE) {
+    int32_t ticks = ground; // Get augur position
+    if(ticks < (COLUMN_LOWER_POSITION + 500)){ //Make sure augur is not too low
+        fprintf(stderr, "ERROR: Column encoder reading %d ticks is below expected range. "
+                "Check column position and encoder.\n", ticks);
+    }
+    else{
+        printf("Starting decrement\n");
+        // int32_t drill_dist = MIN(8333, abs(ground-COLUMN_LOWER_POSITION));
+        while(abs(ground - ticks) < 8333){ // If augur has moved 10cm (8333 ticks) down, stop. Otherwise, dig down.
+            int32_t target_distance = (ticks - 500);
+            int32_t distance_remaining = ticks_remaining(ticks, target_distance);
+            digitalWrite(COLUMN_RL_PIN1, 1);
+            printf("Drilling to %d\n", target_distance);
+            while(distance_remaining > 10){
                 digitalWrite(COLUMN_RL_PIN1, 1);
+                usleep(20000);
+                printf("Drilling dist rem %d\n", distance_remaining);
+                ticks = read_position_ticks();
+                distance_remaining = ticks_remaining(ticks, target_distance);
             }
+            digitalWrite(COLUMN_RL_PIN1, 0);
+            if (ticks<=COLUMN_LOWER_POSITION){
+                break;
+            }
+            sleep(2);
+            distance = zero - tofReadDistance();
+            if (distance >= AUGUR_DONE_DISTANCE){
+                break;
+            }
+            // }
+            // digitalWrite(COLUMN_RL_PIN1, 0);
+            // usleep(200000 /* 2ms, 5/sec */);
+            // distance = zero - tofReadDistance();
         }
-        digitalWrite(COLUMN_RL_PIN1, 0);
-        usleep(200000 /* 2ms, 5/sec */);
-        distance = zero - tofReadDistance();
     }
  
     // Stop augur
+    puts("Augur off");
     spin_augur(AUGUR_ON, AUGUR_OFF);
     sleep(1);
 
@@ -82,6 +112,7 @@ void collect_and_deposit_dirt(){
     raiseLowerTo(COLUMN_RAISE_POSITION, COLUMN_RL_PIN2, COLUMN_RL_PIN1);
     sleep(1);
 
+    // spin_augur()
     // Move column to deposit position
     rotateTo(DEPOSIT_ROTATE_POSITION, H1A_3, H1A_4);
     sleep(1);

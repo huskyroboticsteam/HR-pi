@@ -1,9 +1,9 @@
-#include "../Centrifuge/rotateServoTo.c"
+// #include "../Centrifuge/rotateServoTo.c"
 #include "../Pump/raiseLower_Pump.c"
 #include "../Centrifuge/centrifugeSpin.c"
 #include "../../functions.h"
 #include "../../pins.h"
-#include "../WaterLevel/pumpToHeight.c"
+#include "../pumpToHeight.c"
 
 
 // encoder positions we can call
@@ -15,7 +15,11 @@
 #define SPIN_DURATION XX // How long we spin the centrifuge for (placeholder)
 #define PUMP_HEIGHT_MM XX // placeholder
 #define CAL_MAX_ADC XX // placeholder
-
+// static void intHandler(int dummy) {
+//     sigint = 1;
+//     digitalWrite(SPIN_CHANNEL, 0);
+//   }
+// global volatile int sigint = 0;
 void fluidsProcessing() {
     // rotate centrifuge to a set position
     rotateTo(POS_0); //PLACEHOLDER

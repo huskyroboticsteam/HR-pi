@@ -1,14 +1,13 @@
 #include <wiringPi.h>
 
 #include <opencv2/opencv.hpp>
+#include <wiringPi.h>
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <thread>
 #include <chrono>
-
 #include "../../pins.h"
-
 using namespace std;
 //To Compile:
 //g++ calibrations.cpp -o calib `pkg-config --cflags --libs opencv4`
