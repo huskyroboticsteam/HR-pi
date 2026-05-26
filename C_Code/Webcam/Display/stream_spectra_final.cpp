@@ -145,8 +145,11 @@ void on_quit(vector<int> averages, vector<double> dark, vector<double> light) {
     double blue_peak = find_abs_peaks(440, 485, averages, dark, light);
     vector<double> peaks = {red_peak, orange_peak, yellow_peak, green_peak, cyan_peak, blue_peak};
     std::ofstream file("/home/robot/HR-pi/output_data/peaks_colors.csv");
-    file << "Red, Orange, Yellow, Green, Cyan, Blue\n";
+    file << "Red,Orange,Yellow,Green,Cyan,Blue\n";
     for (int i = 0; i < peaks.size(); i++) {
+        if (peaks[i]!=peaks[i]){ // check if nan
+            peaks[i]=0;
+        }
         file << peaks[i];
         if (i != peaks.size() - 1) file << ",";
     }

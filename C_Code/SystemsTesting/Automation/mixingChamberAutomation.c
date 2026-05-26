@@ -32,8 +32,8 @@ static int mc_should_abort(void) {
 }
 
 // pump times
-#define KCL_PUMP_TIME
-#define NIH_PUMP_TIME
+#define KCL_PUMP_TIME 1
+#define NIH_PUMP_TIME 2
 #define SPECTROMETER_PUMP_TIME 
 #define BURNER_HEAT_TIME 900 //seconds
 #define DUMP_TIME 

@@ -74,7 +74,7 @@ static int run_temp_reading(void) {
             perror("fopen failed");
         } else {
             fprintf(csv, "Temperature, Humidity\n");
-            fprintf(csv, "%.2f, %.2f\n", temperature, humidity);
+            fprintf(csv, "%.2f,%.2f\n", temperature, humidity);
             fclose(csv);
         }
         return 0;

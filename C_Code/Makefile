@@ -47,10 +47,14 @@ PWM_Map: functions.c pins.h SystemsTesting/Augur/PWM_Map.c
 # 	gcc -DBUILD_WATERLEVELCALIBRATE_MAIN SystemsTesting/WaterLevel/waterLevelCalibrate.c SystemsTesting/WaterLevel/waterLevelADS1015.c -lwiringPi -o ../Executables/waterLevelCalibrate
 pumpToHeight: SystemsTesting/pumpToHeight.c 
 	gcc -DBUILD_PUMPTOHEIGHT_MAIN SystemsTesting/pumpToHeight.c -lwiringPi -lm -o ../Executables/pumpToHeight
+flood_spectrometer: SystemsTesting/flood_spectrometer.c 
+	gcc -DBUILD_FLOODSPEC_MAIN SystemsTesting/flood_spectrometer.c -lwiringPi -lm -o ../Executables/flood_spectrometer
 waterLevelRead: #waterLevelRead.c SystemsTesting/WaterLevel/waterLevelADS1015.c SystemsTesting/WaterLevel/waterLevel.c
 	gcc -DBUILD_WATERLEVELREAD_MAIN SystemsTesting/waterLevelRead.c -lwiringPi -o ../Executables/waterLevelRead
 dirtSample: functions.c pins.h SystemsTesting/Automation/dirtSample.c 
 	gcc -DBUILD_DSAMPLE_MAIN SystemsTesting/Automation/dirtSample.c functions.c  -lwiringPi -o ../Executables/dirtSample
+chemicaltest: functions.c pins.h SystemsTesting/Automation/mixingChamberAutomation.c 
+	gcc -DBUILD_DSAMPLE_MAIN SystemsTesting/Automation/mixingChamberAutomation.c functions.c -lwiringPi -o ../Executables/chemicaltest
 # centrifugeSpin: functions.c pins.h SystemsTesting/Centrifuge/centrifugeSpin.c
 # 	gcc -DBUILD_CENTRIFUGESPIN_MAIN SystemsTesting/Centrifuge/centrifugeSpin.c functions.c -lwiringPi -o ../Executables/centrifugeSpin
 # centrifugeFluids: functions.c pins.h SystemsTesting/Automation/centrifugeFluids.c
