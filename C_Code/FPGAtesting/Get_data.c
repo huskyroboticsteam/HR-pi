@@ -6,7 +6,7 @@
 //#include <signal.h>
 #define pin 23
 
-#ifdef BUILD_GETD_MAIN
+#ifdef IS_MAIN
 int main(int argc, char *argv[]) {
     int vals[argc-1];
     intparse(argc-1, argv+1, vals);

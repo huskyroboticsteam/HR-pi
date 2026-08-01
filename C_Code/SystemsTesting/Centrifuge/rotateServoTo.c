@@ -58,7 +58,7 @@ void rotateTo(int target_pos) {
   printf("Final: %i\n", current);
 }
 
-#ifdef BUILD_ROTATESERVO_MAIN
+#ifdef IS_MAIN
 int main(int argc, char *argv[]) {
   signal(SIGINT, intHandler);
   wiringPiSetupPinType(WPI_PIN_WPI);

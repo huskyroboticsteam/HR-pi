@@ -65,7 +65,7 @@ static void run_live_monitor(int fd, int channel, int num_samples, int interval_
     }
 }
 
-#ifdef BUILD_WATERLEVELREAD_MAIN
+#ifdef IS_MAIN
 int main(int argc, char *argv[]) {
     int channel     = DEFAULT_CHANNEL;
     int num_samples = DEFAULT_NUM_SAMPLES;

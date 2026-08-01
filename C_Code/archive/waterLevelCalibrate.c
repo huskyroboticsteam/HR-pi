@@ -15,7 +15,7 @@
 #define MIN_ADC_MAX_COUNTS      500
 #define MAX_STABLE_CONFIRM_CYCLES 10
 
-#ifdef BUILD_WATERLEVELCALIBRATE_MAIN
+#ifdef IS_MAIN
 int main() {
     int channel     = DEFAULT_CHANNEL;
     int num_samples = DEFAULT_NUM_SAMPLES;

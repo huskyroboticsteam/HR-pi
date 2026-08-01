@@ -174,7 +174,7 @@ static int raiseLowerTo(int32_t target_ticks, int raise_pin, int lower_pin) {
   return (distance_remaining > TICK_TOLERANCE) ? -1 : 0;
 }
 
-#ifdef BUILD_RAISELOWERC_MAIN
+#ifdef IS_MAIN
 int main(int argc, char *argv[]) {
   signal(SIGINT, intHandler);
   wiringPiSetupPinType(WPI_PIN_WPI);

@@ -16,7 +16,7 @@
 #define COMMAND_REGISTER_BIT 0x80
 #define MULTI_BYTE_BIT 0x20
 
-#ifdef BUILD_COLORREADTEST_MAIN
+#ifdef IS_MAIN
 int main(int argc, char *argv[]){
     int vals[argc-1];
     //intparse(argc, argv, vals);

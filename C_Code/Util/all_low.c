@@ -24,7 +24,7 @@ static void drive_allowed_pins_low(void) {
     }
 }
 
-#ifdef BUILD_ALL_LOW_MAIN
+#ifdef IS_MAIN
 int main(int argc, char *argv[]) {
     (void)argc;
     (void)argv;

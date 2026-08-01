@@ -40,7 +40,7 @@ void rotateTo(int target_pos) {
 
   // Wait until the target position is reached, 10 units before start slowing down
   while (distance_remaining > 5) {
-    #ifdef BUILD_CENTRIFUGESPIN_MAIN
+    #ifdef IS_MAIN
     if (sigint) {
       break;
     }
@@ -80,7 +80,7 @@ void spinFor(int duration_seconds) {
   rotateTo(start_pos);
 }
 
-#ifdef BUILD_CENTRIFUGESPIN_MAIN
+#ifdef IS_MAIN
 static void intHandler(int dummy) {
   sigint = 1;
   digitalWrite(SPIN_CHANNEL, 0);

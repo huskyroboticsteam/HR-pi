@@ -6,7 +6,7 @@
 #include "../functions.h"
 //#include <signal.h>
 
-#ifdef BUILD_RESETENC_MAIN
+#ifdef IS_MAIN
 int main(int argc, char *argv[]) {
     wiringPiSetupPinType(WPI_PIN_WPI);
     int vals[argc-1];

@@ -31,7 +31,7 @@ int32_t spin_augur(int32_t curr_uptime, int32_t target_uptime) {
     return fpga_pwm_uptime(AUGUR_CHANNEL, target_uptime);
 }
 
-#ifdef BUILD_PWMMAP_MAIN
+#ifdef IS_MAIN
 int main(int argc, char *argv[]) {
     int vals[argc-1];
     intparse(argc-1, argv+1, vals);

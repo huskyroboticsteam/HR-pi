@@ -60,7 +60,7 @@ int rotateTo(float target, int left, int right) {
   return 0;
 }
 
-#ifdef BUILD_ROTATETO_MAIN
+#ifdef IS_MAIN
 int main(int argc, char *argv[]) {
   signal(SIGINT, intHandler2);
   wiringPiSetupPinType(WPI_PIN_WPI);

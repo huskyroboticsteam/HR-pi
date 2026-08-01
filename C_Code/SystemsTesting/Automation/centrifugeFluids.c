@@ -38,7 +38,7 @@ void fluidsProcessing() {
    
 }
 
-#ifdef BUILD_CENTRIFUGEFLUIDS_MAIN
+#ifdef IS_MAIN
 int main(int argc, char* argv[]) {
     // signal(SIGINT, intHandler);
     // wiringPiSetupPinType(WPI_PIN_WPI);

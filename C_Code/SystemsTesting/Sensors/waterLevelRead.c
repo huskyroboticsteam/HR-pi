@@ -58,7 +58,7 @@ int16_t ads1015_read(int fd, int channel) {
     return raw;
 }
 
-#ifdef BUILD_WATERLEVELREAD_MAIN
+#ifdef IS_MAIN
 int main(int argc, char *argv[]) {
     // if (argc < 3) {
     //     printf("Usage: %s <wPi_pin> <time_s>\n", argv[0]);

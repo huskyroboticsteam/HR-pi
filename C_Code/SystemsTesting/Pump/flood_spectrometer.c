@@ -122,7 +122,7 @@ void pumpToTime(int pin, float time_s) {
     printf("Timer finished, ending pump \n");
     digitalWrite(pin, 0);
 }
-#ifdef BUILD_FLOODSPEC_MAIN
+#ifdef IS_MAIN
 int main(int argc, char *argv[]) {
     // if (argc < 3) {
     //     printf("Usage: %s <wPi_pin> <time_s>\n", argv[0]);

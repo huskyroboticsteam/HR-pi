@@ -13,7 +13,7 @@
 #define HALL_BIT HALL_CHANNEL /* 0–2: which sensor to watch */
 #define RAISED FLUIDS_HALL_TOP   /* Hall active → bit 0 */
 #define LOWERED FLUIDS_HALL_BOTTOM  /* idle → bit 1 */
-#ifdef BUILD_RAISELOWERP_MAIN
+#ifdef IS_MAIN
 static int sigint = 0;
 static void intHandler(int dummy) { sigint = 1; }
 #endif
@@ -43,7 +43,7 @@ void pump(int should_raise) { // 1 is up, 0 is lowered
   digitalWrite(active_pin, 1);
 
   while (get_fpga_bit(HALL_CHANNEL, target_state) != 0) {
-    #ifdef BUILD_RAISELOWERP_MAIN
+    #ifdef IS_MAIN
     if (sigint) {
       break;
     }
@@ -55,7 +55,7 @@ void pump(int should_raise) { // 1 is up, 0 is lowered
   digitalWrite(LOWER_PUMP_PIN, 0);
 }
 
-#ifdef BUILD_RAISELOWERP_MAIN
+#ifdef IS_MAIN
 
 int main(int argc, char *argv[]) {
   signal(SIGINT, intHandler);

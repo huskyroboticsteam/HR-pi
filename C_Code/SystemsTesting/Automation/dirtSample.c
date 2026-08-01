@@ -164,7 +164,7 @@ void collect_and_deposit_dirt(){
 
 }
 
-#ifdef BUILD_DSAMPLE_MAIN
+#ifdef IS_MAIN
 int main(int argc, char *argv[]) {
     wiringPiSetupPinType(WPI_PIN_WPI);
     int vals[argc-1];

@@ -83,7 +83,7 @@ static int run_temp_reading(void) {
     return -1;
 }
 
-#ifdef BUILD_TEMPREAD_MAIN
+#ifdef IS_MAIN
 int main(void) {
     if (aht_init() < 0) {
         return -1;
