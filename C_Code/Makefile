@@ -1,5 +1,5 @@
 CC       := gcc
-CFLAGS   := -Wall -Wextra -O2 -MMD -MP
+CFLAGS   := -Wall -Wextra -O2 -MMD -MP -lwiringPi
 BUILD_DIR:= build
 
 # --- Configure these -----------------------------------------------

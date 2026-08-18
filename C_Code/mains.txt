@@ -3,12 +3,11 @@
 FPGAtesting/Get_data.c
 FPGAtesting/GetRaw.c
 FPGAtesting/centriAbs.c
-FPGAtesting/Fpwm.c
+FPGAtesting/fpwm.c
 SystemsTesting/softPWM.c
 SystemsTesting/resetEnc.c
 SystemsTesting/toggle.c
 SystemsTesting/all_low.c
-SystemsTesting/colorReadTest.c
 Centrifuge/rotateServoTo.c
 Column/rotateTo_column.c
 Column/raise_lower_column.c

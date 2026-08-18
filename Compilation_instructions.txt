@@ -1,5 +1,0 @@
-To compile code, run the following in the command line:
-
-gcc -o <OUTPUT NAME> YOUR_FILE.c -lwiringPi
-
-to run the compiled code, just type the OUTPUT NAME into the terminal

@@ -1,0 +1,1 @@
+To compile code, add main file to mains.txt and run 'make'
