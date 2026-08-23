@@ -7,8 +7,8 @@
 #include "../Column/raise_lower_column.c"
 #include "../Column/rotateTo_column.c"
 #include "../Augur/PWM_Map.c"
-#include "../tof.c" // No idea why this requries the c file, but the h file doesn't work for some reason.
-#include "../tofTest.c"
+#include "../tof.h"
+// #include "../tofTest.c"
 #include <sys/param.h>
 
 // FPGA PWM channel for the dirt-sample servo. Set by startup.sh (`fpwm 2 1500`).
