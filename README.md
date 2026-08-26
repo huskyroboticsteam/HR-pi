@@ -25,7 +25,7 @@ Control system for the Husky Robotics Science Box. A Raspberry Pi runs C program
 
 ## SPI Command Protocol
 
-Every transaction is a 32-bit word. The Pi is always the SPI master.
+Every transaction is a 32-bit word. The Pi is always the SPI leader.
 
 | Bits  | Field           | Description                                      |
 |-------|-----------------|--------------------------------------------------|
@@ -157,7 +157,7 @@ HR-pi/
 │
 ├── verilog/                    # FPGA source (Efinix Ti60F225, synthesized with Efinity)
 │   ├── top_level.sv            # Top-level module; wires all submodules together
-│   ├── SPI.sv                  # SPI slave: latches 32-bit commands, drives 32-bit replies
+│   ├── SPI.sv                  # SPI follower: latches 32-bit commands, drives 32-bit replies
 │   ├── encoder.sv              # Quadrature encoder counter
 │   ├── pwm.sv                  # PWM generator (period + uptime configurable)
 │   ├── pwm_in.sv               # PWM input decoder (reads absolute encoder pulse width)
@@ -222,7 +222,7 @@ To re-synthesize after editing HDL, open the project in Efinity or run the synth
 
 ```
 top_level
-├── SPI          — 32-bit SPI slave receiver/transmitter
+├── SPI          — 32-bit SPI follower receiver/transmitter
 ├── encoder (×3) — Quadrature encoder counters
 ├── pwm (×3)     — Configurable PWM output generators
 └── pwm_in       — PWM pulse-width decoder (centrifuge absolute encoder)
