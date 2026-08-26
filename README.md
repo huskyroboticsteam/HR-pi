@@ -7,18 +7,18 @@ Control system for the Husky Robotics Science Box. A Raspberry Pi runs C program
 ## System Architecture
 
 ```
-┌─────────────────────────────────┐        SPI (10 MHz)       ┌──────────────────────────────────┐
-│         Raspberry Pi            │ ◄────────────────────────► │      Efinix Ti60F225 FPGA        │
-│                                 │                            │                                  │
-│  C programs (this repo)         │                            │  - Quadrature encoder counters   │
-│  ├─ High-level automation       │                            │  - PWM generators (motor/servo)  │
-│  ├─ Subsystem controllers       │                            │  - PWM-in decoder (abs. encoder) │
-│  └─ functions.c SPI library     │                            │  - Hall sensor aggregation       │
-└─────────────────────────────────┘                            └──────────────────────────────────┘
-         │
-         │  GPIO / wiringPi
-         ▼
-  Pumps, relays, fans, heating element, I²C sensors, 1-wire temperature, ToF, color sensor
++---------------------------------+        SPI (10 MHz)        +----------------------------------+
+|         Raspberry Pi            | <------------------------> |      Efinix Ti60F225 FPGA        |
+|                                 |                            |                                  |
+|  C programs (this repo)         |                            |  - Quadrature encoder counters   |
+|  +- High-level automation       |                            |  - PWM generators (motor/servo)  |
+|  +- Subsystem controllers       |                            |  - PWM-in decoder (abs. encoder) |
+|  +- functions.c SPI library     |                            |  - Hall sensor aggregation       |
++---------------------------------+                            +----------------------------------+
+         |
+         |  GPIO / wiringPi
+         v
+  Pumps, relays, fans, heating element, I2C sensors, 1-wire temperature, ToF, color sensor
 ```
 
 ---
