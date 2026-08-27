@@ -9,7 +9,7 @@ int main(int argc, char *argv[]){
     wiringPiSetupPinType(WPI_PIN_WPI);
     pinMode(hallPin,INPUT);
     pullUpDnControl(hallPin, PUD_UP);
-    //printf("The casted value is %d\n", (int)(**(argv+1))-(int)'0');
+    //printf("The casted value is %d\n", (int)(*argv[1])-(int)'0');
     while (1){
         state = digitalRead(hallPin);
         if (state!=last_state){

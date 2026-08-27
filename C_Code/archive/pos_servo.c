@@ -12,10 +12,10 @@ int main(int argc, char *argv[]) {
     int angle = 0;
     int val;
     int argument;
-    int length = length_of(*(argv+1));
+    int length = length_of(argv[1]);
     int dec = 1;
     for (int i=length-1; i>=0; i--){
-        argument = (int)(*(*(argv+1)+i))-(int)'0';
+        argument = (int)(*(argv[1]+i))-(int)'0';
         angle+=dec*argument;
         dec*=10;
     }
@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 
 int length_of(char * point){
     int length = 0;
-    for (int i=0; *(point+i)!='\0'; i++){
+    for (int i=0; point[i]!='\0'; i++){
         length++;
     }
     return length;
@@ -52,7 +52,7 @@ int to_int(char * input){
     int length = length_of(input);
     int dec = 1;
     for (int i=length-1; i>=0; i--){
-        argument = (int)(*(input+i))-(int)'0';
+        argument = (int)(input[i])-(int)'0';
         val+=dec*argument;
         dec*=10;
     }
