@@ -26,28 +26,6 @@
 
 #define ZERO_NUM_SAMPLES 25
 
-static int init (void) {
-	int i;
-	int model;
-	int revision;
-	i = tofInit(1, 0x29, 0);
-	if (i != 1) {
-		return -1;
-	}
-
-	printf("VL53L0X device successfully opened.\n");
-	i = tofGetModel(&model, &revision);
-	if (i != 1) {
-		return -1;
-	}
-	printf("Model ID - %d\n", model);
-	printf("Revision ID - %d\n", revision);
-
-	setMeasurementTimingBudget(200000);
-	printf("High Accuracy Enabled (200ms) \n");
-
-	return i;
-}
 
 static int run_tof_test(int zero) {
 	int iDistance;

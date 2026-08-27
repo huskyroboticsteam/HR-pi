@@ -12,7 +12,7 @@
 */
 
 #include "../functions.h"
-#include "../../pins.h"
+#include "../pins.h"
 #include <signal.h>
 #include <stdint.h>
 #include <stdio.h>

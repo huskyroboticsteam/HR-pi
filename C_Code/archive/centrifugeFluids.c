@@ -1,8 +1,8 @@
 // #include "../Centrifuge/rotateServoTo.c"
 #include "../Pump/raiseLower_Pump.c"
 #include "../Centrifuge/centrifugeSpin.c"
-#include "../../functions.h"
-#include "../../pins.h"
+#include "../functions.h"
+#include "../pins.h"
 #include "../pumpToHeight.c"
 
 

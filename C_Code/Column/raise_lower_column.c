@@ -6,8 +6,8 @@
 #include <unistd.h>
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
-#include "../../functions.h"
-#include "../../pins.h"
+#include "../functions.h"
+#include "../pins.h"
 
 #define DATA_ADDR ENC_RAISE_LOWER
 

@@ -24,7 +24,6 @@
 #include <wiringPiSPI.h>
 #include <signal.h>
 #include <stdlib.h>
-// #include "rotateServoTo.c"
 #define SPIN_CHANNEL CENTRIFUGE_PIN // Centrifuge spin pin
 #define SERVO_CHANNEL CENTRIFUGE_SERVO_CHANNEL      // FPGA PWM channel for the centrifuge servo
 #define SERVO_PERIOD 10000                      // full duty (on)
@@ -117,11 +116,11 @@ void spinFor(int duration_seconds) {
 }
 
 #ifdef IS_MAIN
+static volatile int sigint = 0;
 static void intHandler(int dummy) {
   sigint = 1;
   digitalWrite(SPIN_CHANNEL, 0);
 }
-static volatile int sigint = 0;
 int main(int argc, char* argv[]) {
   signal(SIGINT, intHandler);
   wiringPiSetupPinType(WPI_PIN_WPI);

@@ -2,9 +2,9 @@
 #include <wiringPiSPI.h>
 // #include <stdio.h>
 #include <stdint.h>
-#include "../../functions.h"
+#include "../functions.h"
 //#include <signal.h>
-#include "../../pins.h"
+#include "../pins.h"
 #include <unistd.h>
 
 // Map a value from one range to another.

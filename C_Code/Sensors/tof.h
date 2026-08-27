@@ -37,4 +37,5 @@ int tofInit(int iChan, int iAddr, int bLongRange);
 
 int setMeasurementTimingBudget(unsigned int budget_us);
 
+static int init();
 #endif // _TOFLIB_H

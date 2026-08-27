@@ -179,7 +179,7 @@ int main(int argc, char *argv[]) {
     printf("ADS1015 water level sensor -- AIN%d, %d-sample average, %d ms interval\n\n",
            channel, num_samples, interval_ms);
     printf("\n\n\n\n");  // reserve lines for in-place update
-
+    int val;
     FILE *f = fopen("ADC_Max.bin", "rb");
     float cal_max_adc;
     fread(&val, sizeof(float), 1, f);

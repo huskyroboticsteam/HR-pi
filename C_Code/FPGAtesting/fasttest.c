@@ -23,9 +23,6 @@ struct timespec start, end;
 #define SPIFREQ 500E3
 //#include <signal.h>
 int main(int argc, char *argv[]) {
-
-    int vals[argc-1];
-    argparse(argc-1, argv+1, vals);
     uint32_t result;
     fpga_datatran(2);
     long int errors = 0;

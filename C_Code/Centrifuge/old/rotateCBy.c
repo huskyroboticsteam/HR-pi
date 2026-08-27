@@ -1,4 +1,4 @@
-#include "../../functions.h"
+#include "../functions.h"
 #include "../../pins.h"
 #include <signal.h>
 #include <stdint.h>

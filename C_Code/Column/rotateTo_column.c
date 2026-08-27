@@ -3,8 +3,8 @@
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 // #include <stdio.h>
-#include "../../functions.h"
-#include "../../pins.h"
+#include "../functions.h"
+#include "../pins.h"
 #include <signal.h>
 #include <stdint.h>
 #include <unistd.h>

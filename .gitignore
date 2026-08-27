@@ -3,3 +3,7 @@ env
 verilog/*/*
 .lock
 .DS_Store
+.clangd
+wiringPi.h
+wiringPiSPI.h
+wiringPiI2C.h

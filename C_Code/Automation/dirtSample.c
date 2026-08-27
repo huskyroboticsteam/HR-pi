@@ -1,13 +1,14 @@
+#include <stdlib.h>
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 #include <stdint.h>
 #include <unistd.h>
 #include <stdio.h>
-#include "../../functions.h"
+#include "../functions.h"
 #include "../Column/raise_lower_column.c"
 #include "../Column/rotateTo_column.c"
-#include "../Augur/PWM_Map.c"
-#include "../tof.h"
+#include "../Sensors/tof.h"
+
 // #include "../tofTest.c"
 #include <sys/param.h>
 
@@ -34,6 +35,8 @@
 // Distance where ToF sensor considers augur done. 
 // PLACEHOLDER VALUE, CHANGE!!
 #define AUGUR_DONE_DISTANCE 25
+
+int32_t spin_augur(int32_t curr_uptime, int32_t target_uptime);
 
 void collect_and_deposit_dirt(){
     // Close sample collector

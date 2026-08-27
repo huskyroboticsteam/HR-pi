@@ -1,5 +1,5 @@
-#include "../../functions.h"
-#include "../../pins.h"
+#include "../functions.h"
+#include "../pins.h"
 #include <math.h>
 #include <signal.h>
 #include <stdint.h>
