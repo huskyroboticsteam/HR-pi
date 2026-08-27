@@ -1,10 +1,18 @@
+/*
+    Author: Caleb Ceravolo
+    
+    Purpose: 
+    To get data from an FPGA register as an integer
+    Execution:
+    getData {channel}
+*/
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 #include <stdio.h>
 #include <stdint.h>
 #include "../functions.h"
 //#include <signal.h>
-#define pin 23
+
 
 #ifdef IS_MAIN
 int main(int argc, char *argv[]) {

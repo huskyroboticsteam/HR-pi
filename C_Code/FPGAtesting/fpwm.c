@@ -1,3 +1,14 @@
+/*
+    Author: Caleb Ceravolo
+    
+    Purpose: 
+    To provide console command for controlling pwm pins on FPGA
+    Units are microseconds (aka 1E-6 seconds)
+
+    Execution:
+    fpwm {channel} {uptime} [period]
+*/
+
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 // #include <stdio.h>

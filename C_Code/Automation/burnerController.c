@@ -1,10 +1,17 @@
-// Excecution:
+/*
+    Author:
 
-//cd C_Code
-//gcc SystemsTesting/burnerController.c functions.c -lwiringPi -o ../Executables/burnerController
-//sudo ./Executables/burnerController 60 5
-//      # heat to 65 celcius, maintain at 60
-//      
+    Purpose:
+    Bang-bang temperature controller for the burner using a DS18B20
+    1-wire temperature sensor. Maintains temperature within a hysteresis
+    band around a target. Can be used standalone or called from another
+    controller as burnerControl().
+
+    Execution:
+    cd C_Code
+    gcc Automation/burnerController.c functions.c -lwiringPi -o ../Executables/burnerController
+    sudo ./Executables/burnerController {target_C} {overshoot_C}
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,8 +40,10 @@
 volatile sig_atomic_t burner_sigint = 0;
 static void intHandler(int _) { (void)_; burner_sigint = 1; }
 
-// Reads the DS18B20 temperature via the kernel 1-Wire sysfs interface.
-// Returns degrees C, or -999.0 on any failure (no device, file unreadable, etc).
+/*
+Reads the DS18B20 temperature via the kernel 1-Wire sysfs interface
+Returns degrees C, or SENSOR_ERROR (-999.0) on any failure
+*/
 float read_ds18b20_temp(void) {
     // Cache the device path between calls so we only scan the directory once.
     static char cached_device_file[256] = {0};
@@ -81,6 +90,13 @@ float read_ds18b20_temp(void) {
 static inline void burner_on(void)  { digitalWrite(BURNER_PIN, 1); }
 static inline void burner_off(void) { digitalWrite(BURNER_PIN, 0); }
 
+/*
+Runs the bang-bang burner control loop for a fixed duration
+
+temp_c: Target temperature in degrees C (center of hysteresis band)
+range: Half-width of hysteresis band in degrees C
+time_s: Duration to run the controller in seconds
+*/
 int burnerControl(float temp_c, float range, int time_s) {
     // SIGINT handler is the caller's responsibility. We DO NOT clear burner_sigint
     // here — if a caller hit Ctrl+C during an earlier phase, the flag should still

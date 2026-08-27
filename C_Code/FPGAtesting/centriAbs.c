@@ -1,3 +1,13 @@
+/*
+    Author: Caleb Ceravolo
+
+    Purpose:
+    To print out the current angle 0-360 of the centrifuge absolute encoder
+
+    Execution:
+    centriAbs
+*/
+
 #include "../functions.h"
 #include "../pins.h"
 #include <stdint.h>

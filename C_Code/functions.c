@@ -1,6 +1,18 @@
+/*
+    Author(s): Caleb Ceravolo
+
+    Purpose: 
+    To provide overall functions for interfacing with the
+    FPGA and debugging. Include functions.h if you want to interface
+    with the FPGA
+    
+    Execution: n/a
+*/
+
 #include <stdint.h>
 #include <stdio.h>
 // #include <stdlib.h>
+#include <stdlib.h>
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 #include "functions.h"
@@ -15,11 +27,11 @@
     int main(int argc, char** argv){
         int output[argc-1];
         intparse(argc-1, argv+1, output);
-        //print_bin(8, (*output)<<*(output+1));
+        //print_bin(8, (*output)<<output[1]);
         // printf("%d", (int)'\0');
         //printf("%X", print);
         for (int i=0; i<argc-1; i++){
-            printf("%x ", *(output+i));
+            printf("%x ", output[i]);
         }
         printf("\n");
     }
@@ -31,7 +43,7 @@ Mostly a debug function. Used to print out a list
 void print_arr(void * input, int len){
     char* ch=(char *)input;
     for (int i=0; i<len; i++){
-        printf("%X ", *(ch+i));
+        printf("%X ", ch[i]);
     }
     printf("\n");
 }
@@ -63,22 +75,31 @@ Converts a string to an integer
 arg: The pointer to the string
 output: int value of string
 */
-int char_to_int(char * arg){
+int string_to_int(char * arg){
     float res = 0;
     uint8_t negative = *arg=='-';
     uint8_t base = 10;
-    if (*(arg+negative)=='0'){
-        if (*(arg+negative+1)=='b'){
+    if (arg[negative]=='0'){
+        if (arg[negative+1]=='b'){
             base=2;
-        } else if (*(arg+negative+1)=='x'){
+        } else if (arg[negative+1]=='x'){
             base=16;
         }
     }
     int curr_num=0;
-    for (int i=negative+2*(base!=10); *(arg+i)!='\0'; i++){
-            curr_num=(int)(*(arg+i))-(int)'0';
-            if (curr_num>9){
-                curr_num-=39;
+    for (int i=negative+2*(base!=10); arg[i]!='\0'; i++){
+            curr_num=(int)arg[i]-(int)'0';
+            if ((base==16)&&(curr_num>9)){
+                if (curr_num>9){
+                    curr_num-='A'-'9'-1; // Convert from capitol letters to decimal
+                    if (curr_num>16){
+                        curr_num-='a'-'A'; // Convert from upper case to lower case
+                    }
+                }
+            }
+            if (curr_num>=base || curr_num<0){
+                printf("ERROR: %s contains character %c which is outside of the accepted range\n", arg, arg[i]);
+                exit(1);
             }
             res*=base;
             res+=curr_num;
@@ -91,17 +112,17 @@ Converts a string to a float
 arg: The pointer to the string
 output: float value of string
 */
-float char_to_float(char * arg){
+float string_to_float(char * arg){
     float res = 0;
     uint8_t negative = *arg=='-';
     uint8_t decimal = 0;
     uint8_t deci_count = 10;
     int curr_num=0;
-    for (int i=negative; *(arg+i)!='\0'; i++){
-        if (*(arg+i)=='.'){
+    for (int i=negative; arg[i]!='\0'; i++){
+        if (arg[i]=='.'){
             decimal=1;
         } else {
-            curr_num=(int)(*(arg+i))-(int)'0';
+            curr_num=(int)(arg[i])-(int)'0';
             if (!decimal){
                 res*=10;
                 res+=curr_num;
@@ -127,7 +148,7 @@ output: float list to be overwritten
 */
 void floatparse (int argc, char** args, float * output){
     for (int i=0; i<argc; i++){
-        *(output+i)=char_to_float(*(args+i));
+        output[i]=string_to_float(args[i]);
     }
 }
 /*
@@ -143,7 +164,7 @@ output: int list to be overwritten
 */
 void intparse (int argc, char** args, int * output){
     for (int i=0; i<argc; i++){
-        *(output+i)=char_to_int(*(args+i));
+        output[i]=string_to_int(args[i]);
     }
 }
 
@@ -313,7 +334,7 @@ Returns length of a character string
 */
 int length_of(char * point){
     int length = 0;
-    for (int i=0; *(point+i)!='\0'; i++){
+    for (int i=0; point[i]!='\0'; i++){
         length++;
     }
     return length;

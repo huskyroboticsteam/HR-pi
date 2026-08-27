@@ -1,3 +1,16 @@
+/*
+    Author: Caleb Ceravolo
+
+    Purpose:
+    To stress test the fpga SPI connection using fastran and get error percent
+    and execution time of the program
+
+    Execution:
+    cd C_Code
+    gcc FPGAtesting/fasttest.c functions.c -lwiringPi -o ../Executables/fasttest
+    sudo ./Executables/fasttest {num_iterations}
+*/
+
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 #include <stdio.h>

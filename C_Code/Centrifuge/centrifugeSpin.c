@@ -1,3 +1,17 @@
+/*
+    Author:
+
+    Purpose:
+    Provides functions to spin the centrifuge for a given duration and
+    rotate it to a target absolute encoder position using the FPGA PWM
+    servo channel.
+
+    Execution:
+    cd C_Code
+    gcc Centrifuge/centrifugeSpin.c functions.c -lwiringPi -lpthread -o ../Executables/centrifugeSpin
+    sudo ./Executables/centrifugeSpin {duration_seconds}
+*/
+
 #include "../../functions.h"
 #include "../../pins.h"
 #include <pthread.h>
@@ -21,14 +35,25 @@
 
 
 
+/*
+Turns off the centrifuge spin motor
+*/
 static void spin_off(void) {
   digitalWrite(SPIN_CHANNEL, 0);
 }
 
-static void pwm_off(void) { 
-  fpga_pwm_uptime(SERVO_CHANNEL, SERVO_OFF); 
+/*
+Turns off the centrifuge servo PWM signal
+*/
+static void pwm_off(void) {
+  fpga_pwm_uptime(SERVO_CHANNEL, SERVO_OFF);
 }
 
+/*
+Rotates the centrifuge to the target absolute encoder position
+
+target_pos: Target encoder count (0-1017)
+*/
 void rotateTo(int target_pos) {
   int current = fpga_safetran(ENC_ABS);
 
@@ -57,6 +82,12 @@ void rotateTo(int target_pos) {
   printf("Final: %i\n", current);
 }
 
+/*
+Ramps a digital pin up to full duty using software PWM
+
+pin: GPIO pin to ramp
+period_scale: Number of steps to ramp over (higher = longer ramp)
+*/
 void softPWM_ramp(int pin, int period_scale) {
   printf("Period: %i pin: %i\n", period_scale, pin);
   for(int i = 0; i <= period_scale; i++) {
@@ -67,7 +98,12 @@ void softPWM_ramp(int pin, int period_scale) {
   }
 }
 
-// duration_seconds does not account for time taken to ramp up
+/*
+Spins the centrifuge for a given duration then returns to the starting position
+Note: duration_seconds does not account for time taken to ramp up
+
+duration_seconds: How long to run at full speed
+*/
 void spinFor(int duration_seconds) {
   int start_pos = fpga_safetran(ENC_ABS);
   printf("Spinning for %d seconds\n", duration_seconds);

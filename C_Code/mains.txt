@@ -1,7 +1,7 @@
 # List of all files to be turned into binaries
 
-FPGAtesting/Get_data.c
-FPGAtesting/GetRaw.c
+FPGAtesting/getData.c
+FPGAtesting/getRaw.c
 FPGAtesting/centriAbs.c
 FPGAtesting/fpwm.c
 SystemsTesting/softPWM.c

@@ -1,3 +1,16 @@
+/*
+    Author:
+
+    Purpose:
+    Rotates the centrifuge to one of four preset positions (0-3) using
+    the FPGA PWM servo channel and absolute encoder feedback.
+
+    Execution:
+    cd C_Code
+    gcc Centrifuge/rotateServoTo.c functions.c -lwiringPi -o ../Executables/rotateServoTo
+    sudo ./Executables/rotateServoTo {position 0-3}
+*/
+
 #include "../../functions.h"
 #include "../../pins.h"
 #include <signal.h>
@@ -21,17 +34,27 @@
 
 static volatile int sigint = 0;
 
+/*
+SIGINT handler — stops the servo and sets the exit flag
+*/
 static void intHandler(int dummy) {
   (void)dummy;
   sigint = 1;
   fpga_pwm_uptime(SERVO_CHANNEL, SERVO_OFF);
 }
 
-static void pwm_off(void) { 
-  fpga_pwm_uptime(SERVO_CHANNEL, SERVO_OFF); 
+/*
+Turns off the centrifuge servo PWM signal
+*/
+static void pwm_off(void) {
+  fpga_pwm_uptime(SERVO_CHANNEL, SERVO_OFF);
 }
 
+/*
+Rotates the centrifuge to the target absolute encoder position
 
+target_pos: Target encoder count (0-1017)
+*/
 void rotateTo(int target_pos) {
   int current = fpga_safetran(ENC_ABS);
 
