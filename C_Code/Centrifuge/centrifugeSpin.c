@@ -12,8 +12,8 @@
     sudo ./Executables/centrifugeSpin {duration_seconds}
 */
 
-#include "../../functions.h"
-#include "../../pins.h"
+#include "../functions.h"
+#include "../pins.h"
 #include <pthread.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -125,8 +125,6 @@ static volatile int sigint = 0;
 int main(int argc, char* argv[]) {
   signal(SIGINT, intHandler);
   wiringPiSetupPinType(WPI_PIN_WPI);
-  int vals[argc - 1];
-  intparse(argc - 1, argv + 1, vals);
-  spinFor(vals[0]);
+  spinFor(string_to_int(argv[1]));
 }
 #endif

@@ -10,11 +10,9 @@
 
 static void run_column_test(int argc, char *argv[]) {
     wiringPiSetupPinType(WPI_PIN_WPI);
-    int vals[argc - 1];
-    intparse(argc - 1, argv + 1, vals);
     pinMode(LEFTEN, OUTPUT);
     pinMode(RIGHTEN, OUTPUT);
-    if (vals[0] == 1) {
+    if (string_to_int(argv[1]) == 1) {
         digitalWrite(RIGHTEN, 0);
         digitalWrite(LEFTEN, 1);
     } else {

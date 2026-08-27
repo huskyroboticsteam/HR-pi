@@ -22,9 +22,6 @@ static void configure_color_sensor_new(int fd) {
 }
 
 static int run_color_read_new(int argc, char *argv[]) {
-    int vals[argc - 1];
-    intparse(argc, argv, vals);
-    (void)vals;
     int fd = open_color_i2c();
     if (fd == -1) {
         return -1;

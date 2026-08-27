@@ -194,10 +194,8 @@ int main(int argc, char *argv[]) {
     }
 
     // Parse args as floats. target = lower bound, upper = target + overshoot = shut-off point.
-    float vals[2];
-    floatparse(2, argv + 1, vals);
-    float target = vals[0];
-    float overshoot = vals[1];
+    float target = string_to_float(argv[1]);
+    float overshoot = string_to_float(argv[2]);
     float upper = target + overshoot;
     float lower = target - overshoot;
 

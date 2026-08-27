@@ -29,28 +29,26 @@ void* softPWM(void* input){
 
 static int run_soft_pwm_cli(int argc, char *argv[]) {
     wiringPiSetupPinType(WPI_PIN_WPI);
-    int vals[argc - 1];
-    intparse(argc - 1, argv + 1, vals);
     int period = 0;
     struct PWMinput arguments;
-    arguments.pin = vals[0];
+    arguments.pin = string_to_int(argv[1]);
     arguments.period = &period;
     pthread_t pwmProc;
-    pinMode(vals[0], OUTPUT);
-    period = vals[1];
+    pinMode(string_to_int(argv[1]), OUTPUT);
+    period = string_to_int(argv[2]);
 
     pthread_create(&pwmProc, NULL, softPWM, &arguments);
-    for (int i=0; i<vals[2]; i++){
+    for (int i=0; i<string_to_int(argv[3]); i++){
         usleep(10000);
         if (sigint){
             break;
         }
     }
-    // usleep(1000 * vals[2]);
+    // usleep(1000 * string_to_int(argv[3]));
 
     pthread_cancel(pwmProc);
     pthread_join(pwmProc, NULL);
-    digitalWrite(vals[0], 0);
+    digitalWrite(string_to_int(argv[1]), 0);
     return 0;
 }
 

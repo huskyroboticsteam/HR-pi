@@ -18,10 +18,8 @@ static void toggle_or_drive_high(int pin) {
 
 static int run_toggle(int argc, char *argv[]) {
     wiringPiSetupPinType(WPI_PIN_WPI);
-    int vals[argc - 1];
-    intparse(argc - 1, argv + 1, vals);
     for (int i = 0; i < argc - 1; i++) {
-        toggle_or_drive_high(vals[i]);
+        toggle_or_drive_high(string_to_int(argv[i+1]));
     }
     return 0;
 }

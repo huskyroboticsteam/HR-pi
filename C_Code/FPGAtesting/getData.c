@@ -12,15 +12,7 @@
 #include <stdint.h>
 #include "../functions.h"
 //#include <signal.h>
-
-
-#ifdef IS_MAIN
 int main(int argc, char *argv[]) {
-    int vals[argc-1];
-    intparse(argc-1, argv+1, vals);
-    uint32_t result=fpga_safetran(*vals);
+    uint32_t result=fpga_safetran(string_to_int(argv[1]));
     printf("%i\n", result);
-
-    // print_bin(32,result);
 }
-#endif

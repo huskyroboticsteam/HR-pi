@@ -135,22 +135,22 @@ float string_to_float(char * arg){
     return (negative ? -1*res : res);
 }
 
-/*
-Turns a list of args into floats
+// /*
+// Turns a list of args into floats
 
-Inputs: 
+// Inputs: 
 
-argc: length of args
+// argc: length of args
 
-args: list of strings
+// args: list of strings
 
-output: float list to be overwritten
-*/
-void floatparse (int argc, char** args, float * output){
-    for (int i=0; i<argc; i++){
-        output[i]=string_to_float(args[i]);
-    }
-}
+// output: float list to be overwritten
+// */
+// void floatparse (int len, char** strings, float * output){
+//     for (int i=0; i<len; i++){
+//         output[i]=string_to_float(strings[i]);
+//     }
+// }
 /*
 Turns a list of args into ints
 
@@ -162,11 +162,11 @@ args: list of strings
 
 output: int list to be overwritten
 */
-void intparse (int argc, char** args, int * output){
-    for (int i=0; i<argc; i++){
-        output[i]=string_to_int(args[i]);
-    }
-}
+// void intparse (int len, char** strings, int * output){
+//     for (int i=0; i<len; i++){
+//         output[i]=string_to_int(strings[i]);
+//     }
+// }
 
 /*
 Sends raw data out. Not recommended for use

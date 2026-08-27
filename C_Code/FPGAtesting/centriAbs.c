@@ -19,8 +19,6 @@
 
 #ifdef IS_MAIN
 int main(int argc, char *argv[]) {
-  // int vals[argc-1];
-  // intparse(argc-1, argv+1, vals);
   uint32_t result = fpga_safetran(ENC_CENTRIFUGE_ABS);
   printf("%f\n", ((result) * 360) / 1018.0);
   // degrees = (result*360)/1018

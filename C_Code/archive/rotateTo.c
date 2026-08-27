@@ -53,7 +53,5 @@ static int rotate_to_target_degrees(int target_deg) {
 int main(int argc, char *argv[]) {
   signal(SIGINT, intHandler);
   wiringPiSetupPinType(WPI_PIN_WPI);
-  int vals[argc - 1];
-  intparse(argc - 1, argv + 1, vals);
-  return rotate_to_target_degrees(vals[0]);
+  return rotate_to_target_degrees(string_to_int(argv[1]));
 }

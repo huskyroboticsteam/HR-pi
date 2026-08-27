@@ -6,15 +6,13 @@
 #define MULTI_BYTE_BIT 0x20
 
 static int run_i2c_read_test(int argc, char *argv[]) {
-    int vals[argc - 1];
-    intparse(argc - 1, argv + 1, vals);
-    printf("%x\n", vals[0]);
-    int fd = wiringPiI2CSetup((uint8_t)vals[0]);
+    printf("%x\n", string_to_int(argv[1]));
+    int fd = wiringPiI2CSetup((uint8_t)string_to_int(argv[1]));
     if (fd == -1) {
         printf("Failed to init I2C communication.\n");
         return -1;
     }
-    uint8_t result = wiringPiI2CReadReg8(fd, vals[1]);
+    uint8_t result = wiringPiI2CReadReg8(fd, string_to_int(argv[2]));
     printf("Result: %x\n", result);
     return 0;
 }

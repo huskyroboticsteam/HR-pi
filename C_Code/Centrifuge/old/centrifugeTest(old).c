@@ -1,4 +1,4 @@
-#include "../functions.h"
+#include "../../functions.h"
 #include <pthread.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -33,8 +33,6 @@ void *softPWM(void *input) {
 }
 int main(int argc, char *argv[]) {
   wiringPiSetupPinType(WPI_PIN_WPI);
-  int vals[argc - 1];
-  intparse(argc - 1, argv + 1, vals);
   int period = 0;
   struct PWMinput arguments;
   arguments.pin = LEFTEN;
@@ -47,7 +45,7 @@ int main(int argc, char *argv[]) {
   pthread_create(&pwmProc, NULL, softPWM, &arguments);
   uint32_t fpga_out;
   sleep(5);
-  period = vals[0];
+  period = string_to_int(argv[1]);
   sleep(3);
   while (1) {
     fpga_out = fpga_safetran(1) & (0xFFFF);

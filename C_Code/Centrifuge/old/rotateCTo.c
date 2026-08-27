@@ -52,10 +52,8 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  int vals[argc - 1];
-  intparse(argc - 1, argv + 1, vals);
 
-  int target_pos = vals[0];
+  int target_pos = string_to_int(argv[1]);
 
   rotateTo(target_pos);
 

@@ -6,8 +6,6 @@
 #define MULTI_BYTE_BIT 0x20
 
 static int run_i2c_write_test(int argc, char *argv[]) {
-    int vals[argc - 1];
-    intparse(argc, argv, vals);
     int fd = wiringPiI2CSetup(DEVICE_ID);
     if (fd == -1) {
         printf("Failed to init I2C communication.\n");

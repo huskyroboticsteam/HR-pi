@@ -11,7 +11,7 @@
     sudo ./Executables/rotateServoTo {position 0-3}
 */
 
-#include "../../functions.h"
+#include "../functions.h"
 #include "../../pins.h"
 #include <signal.h>
 #include <stdint.h>
@@ -91,10 +91,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  int vals[argc - 1];
-  intparse(argc - 1, argv + 1, vals);
-
-  int pos_preset = vals[0];
+  int pos_preset = string_to_int(argv[1]);
   int target_pos;
 
   switch (pos_preset) {

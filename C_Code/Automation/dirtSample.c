@@ -167,16 +167,14 @@ void collect_and_deposit_dirt(){
 #ifdef IS_MAIN
 int main(int argc, char *argv[]) {
     wiringPiSetupPinType(WPI_PIN_WPI);
-    int vals[argc-1];
-    intparse(argc-1, argv+1, vals);
     signal(SIGINT, intHandler);
 
-    // vals[0]            = position selector (0 -> POS_A, 1 -> POS_B)
-    // vals[1] (optional) = period in microseconds (set on first call)
+    // string_to_int(argv[1])            = position selector (0 -> POS_A, 1 -> POS_B)
+    // string_to_int(argv[2]) (optional) = period in microseconds (set on first call)
 
     // Normal method, UNCOMMENT LATER
     /*
-    uint32_t uptime = (vals[0] == 0) ? DIRT_SERVO_CLOSED : DIRT_SERVO_OPEN;
+    uint32_t uptime = (string_to_int(argv[1]) == 0) ? DIRT_SERVO_CLOSED : DIRT_SERVO_OPEN;
 
     uint32_t result2 = fpga_pwm_uptime(DIRT_SAMPLE_CHANNEL, uptime);
     print_bin(32, result2);

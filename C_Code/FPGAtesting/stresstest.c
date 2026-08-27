@@ -23,15 +23,16 @@ long int get_time(){
 }
 
 int main(int argc, char *argv[]) {
-    float vals[argc-1];
-    argparse(argc-1, argv+1, vals);
+    // float vals[argc-1];
+    // argparse(argc-1, argv+1, vals);
     uint32_t result;
+    int iterations = string_to_int(argv[1]);
     long int errors = 0;
     int percent = 0;
     int lastPercent = 0;
 
     printf("%c[?25l", ASCII_ESC);
-    printf("Testing %f times\n", vals[0]);
+    printf("Testing %i times\n", iterations);
     printf("0 Percent");
 
 
@@ -40,9 +41,9 @@ int main(int argc, char *argv[]) {
     long int startt = get_time();
     fpga_datatran(7);
     fpga_pwm_uptime(5, 2000);
-    for (long i=0; i<vals[0]; i++){
+    for (long i=0; i<iterations; i++){
         result=fpga_pwm_uptime(5, 2000);
-        percent=((i+1)*100)/vals[0];
+        percent=((i+1)*100)/iterations;
         printf("\r%i Percent", percent);
         lastPercent=percent;
         // if (percent!=lastPercent){
@@ -57,7 +58,7 @@ int main(int argc, char *argv[]) {
             // printf("%c[%iA",ASCII_ESC, errors+1);
         }
         if (sigint){
-            vals[0]=(i+1);
+            iterations=(i+1);
             break;
         }
     }
@@ -68,17 +69,17 @@ int main(int argc, char *argv[]) {
     FILE* ptr;
       // File opened
     ptr = fopen("./tran_rate.txt", "a");
-    fprintf(ptr, "Error rate: %li/%f\n", errors, vals[0]);
+    fprintf(ptr, "Error rate: %li/%i\n", errors, iterations);
     float sec = (float)diff / CLOCKS_PER_SEC;
     fprintf(ptr, "Time elapsed: %fs\n", sec);
-    fprintf(ptr, "Average tran rate: %f Mbits/s\n\n", vals[0]*32/(sec*1E6));
-    fprintf(ptr, "Average tran rate CPU time: %f Mbits/s\n", vals[0]*32/(sec*1E6));
-    fprintf(ptr, "Average tran rate total: %f Mbits/s\n", vals[0]*32.0/(difft*1E6));
+    fprintf(ptr, "Average tran rate: %f Mbits/s\n\n", iterations*32/(sec*1E6));
+    fprintf(ptr, "Average tran rate CPU time: %f Mbits/s\n", iterations*32/(sec*1E6));
+    fprintf(ptr, "Average tran rate total: %f Mbits/s\n", iterations*32.0/(difft*1E6));
     fclose(ptr);
-    printf("\nError rate: %li/%f\n", errors, vals[0]);
+    printf("\nError rate: %li/%i\n", errors, iterations);
     printf("%c[?25h", ASCII_ESC);
     printf("CPU Time elapsed: %fs\n", sec);
     printf("Total Time elapsed: %fs\n", difft);
-    printf("Average tran rate CPU time: %f Mbits/s\n", vals[0]*32/(sec*1E6));
-    printf("Average tran rate total: %f Mbits/s\n", vals[0]*32.0/(difft*1E6));
+    printf("Average tran rate CPU time: %f Mbits/s\n", iterations*32/(sec*1E6));
+    printf("Average tran rate total: %f Mbits/s\n", iterations*32.0/(difft*1E6));
 }

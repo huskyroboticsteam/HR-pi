@@ -1,4 +1,4 @@
-#include "../../functions.h"
+#include "../functions.h"
 #include "../../pins.h"
 #include <pthread.h>
 #include <stdint.h>
@@ -57,7 +57,7 @@ void rotateBy(int degrees) {
   period = 20;
   usleep(5000);
   period = 5;
-  // period = vals[0];
+  // period = string_to_int(argv[1]);
   //(to make it manual)
   volatile int fpga_out;
   fpga_out = fpga_safetran(ENC_CENTRIFUGE_ABS);
@@ -85,10 +85,8 @@ void rotateBy(int degrees) {
 
 int main(int argc, char *argv[]) {
   wiringPiSetupPinType(WPI_PIN_WPI);
-  int vals[argc - 1];
-  intparse(argc - 1, argv + 1, vals);
 
-  int degs = vals[0];
+  int degs = string_to_int(argv[1]);
 
   rotateBy(degs);
   return 0;

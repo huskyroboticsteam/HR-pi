@@ -18,9 +18,7 @@
 
 #ifdef IS_MAIN
 int main(int argc, char *argv[]){
-    int vals[argc-1];
-    //intparse(argc, argv, vals);
-    // printf("%x",(uint8_t)vals[0]);
+    // printf("%x",(uint8_t)string_to_int(argv[1]));
     int fd = wiringPiI2CSetup(DEVICE_ID);
     if (fd == -1) {
         printf("Failed to init I2C communication.\n");

@@ -19,13 +19,11 @@
 
 #ifdef IS_MAIN
 int main(int argc, char *argv[]) {
-    int vals[argc-1];
-    intparse(argc-1, argv+1, vals);
     if (argc>3) {
-        uint32_t result1=fpga_pwm_period(*vals, vals[2]);
+        uint32_t result1=fpga_pwm_period(*vals, string_to_int(argv[3]));
         print_bin(32,result1);
     }
-    uint32_t result2=fpga_pwm_uptime(*vals, vals[1]);
+    uint32_t result2=fpga_pwm_uptime(*vals, string_to_int(argv[2]));
     print_bin(32,result2);
 }
 #endif

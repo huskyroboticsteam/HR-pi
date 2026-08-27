@@ -67,16 +67,14 @@ int main(int argc, char *argv[]) {
   signal(SIGINT, intHandler);
   wiringPiSetupPinType(WPI_PIN_WPI);
 
-  int vals[argc - 1];
-  intparse(argc - 1, argv + 1, vals);
 
-  int degs = vals[0];
+  int degs = string_to_int(argv[1]);
   if (degs <= 0) {
     fprintf(stderr, "degrees must be positive (one-direction motor)\n");
     return 1;
   }
-  uint32_t uptime = (argc >= 3) ? (uint32_t)vals[1] : 1200U;
-  uint32_t period = (argc >= 4) ? (uint32_t)vals[2] : 2000U;
+  uint32_t uptime = (argc >= 3) ? (uint32_t)string_to_int(argv[2]) : 1200U;
+  uint32_t period = (argc >= 4) ? (uint32_t)string_to_int(argv[3]) : 2000U;
 
   if (period == 0 || uptime > period) {
     fprintf(stderr, "invalid PWM: need period>0 and uptime<=period\n");

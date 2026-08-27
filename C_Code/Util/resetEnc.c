@@ -9,8 +9,6 @@
 #ifdef IS_MAIN
 int main(int argc, char *argv[]) {
     wiringPiSetupPinType(WPI_PIN_WPI);
-    int vals[argc-1];
-    intparse(argc-1, argv+1, vals);
-    fpga_reset_encoder(vals[0]);
+    fpga_reset_encoder(string_to_int(argv[1]));
 }
 #endif

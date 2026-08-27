@@ -42,8 +42,6 @@ void fluidsProcessing() {
 int main(int argc, char* argv[]) {
     // signal(SIGINT, intHandler);
     // wiringPiSetupPinType(WPI_PIN_WPI);
-    // int vals[argc - 1];
-    // intparse(argc - 1, argv + 1, vals);
     fluidsProcessing();
 }
 #endif

@@ -33,21 +33,19 @@ int32_t spin_augur(int32_t curr_uptime, int32_t target_uptime) {
 
 #ifdef IS_MAIN
 int main(int argc, char *argv[]) {
-    int vals[argc-1];
-    intparse(argc-1, argv+1, vals);
 
-    // vals[0] = motor channel
-    // vals[1] = speed input (-100 to 100)
-    // vals[2] (optional) = period in microseconds (set on first call)
+    // string_to_int(argv[1]) = motor channel
+    // string_to_int(argv[2]) = speed input (-100 to 100)
+    // string_to_int(argv[3]) (optional) = period in microseconds (set on first call)
 
     // Currently using placeholder numbers to test things - may need to change this line
-    uint32_t uptime = (uint32_t)map_range(vals[1], -100, 100, 500, 1500);
+    uint32_t uptime = (uint32_t)map_range(string_to_int(argv[2]), -100, 100, 500, 1500);
 
     if (argc > 3) {
-        uint32_t result1 = fpga_pwm_period(vals[0], vals[2]);
+        uint32_t result1 = fpga_pwm_period(string_to_int(argv[1]), string_to_int(argv[3]));
         print_bin(32, result1);
     }
-    uint32_t result2 = fpga_pwm_uptime(vals[0], uptime);
+    uint32_t result2 = fpga_pwm_uptime(string_to_int(argv[1]), uptime);
     print_bin(32, result2);
 }
 #endif

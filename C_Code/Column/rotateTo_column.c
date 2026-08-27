@@ -64,9 +64,7 @@ int rotateTo(float target, int left, int right) {
 int main(int argc, char *argv[]) {
   signal(SIGINT, intHandler2);
   wiringPiSetupPinType(WPI_PIN_WPI);
-  int vals[argc - 1];
-  intparse(argc - 1, argv + 1, vals);
-  rotateTo(vals[0], H1A_3, H1A_4);
+  rotateTo(string_to_int(argv[1]), H1A_3, H1A_4);
   return 0;
 }
 #endif

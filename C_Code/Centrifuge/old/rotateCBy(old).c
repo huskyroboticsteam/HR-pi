@@ -81,7 +81,7 @@ extern double findVelocity(int sample_time_us);
   }
   
   period = 10; // Set to low value
-  // period = vals[0]; //(to make it manual)
+  // period = string_to_int(argv[1]); //(to make it manual)
   // 4. Wait until the target position is reached
 
   int fpga_out = (int)fpga_safetran(ENC);
@@ -105,10 +105,8 @@ extern double findVelocity(int sample_time_us);
 int main(int argc, char *argv[]) {
   signal(SIGINT, intHandler);
   wiringPiSetupPinType(WPI_PIN_WPI);
-  int vals[argc - 1];
-  intparse(argc - 1, argv + 1, vals);
 
-  int degs = vals[0];
+  int degs = string_to_int(argv[1]);
 
   rotateBy(degs);
   return 0;

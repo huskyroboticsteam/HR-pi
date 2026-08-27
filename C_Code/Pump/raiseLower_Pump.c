@@ -61,9 +61,7 @@ int main(int argc, char *argv[]) {
   signal(SIGINT, intHandler);
 
   wiringPiSetupPinType(WPI_PIN_WPI);
-  int vals[argc - 1];
-  intparse(argc - 1, argv + 1, vals);
-  pump(vals[0]);
+  pump(string_to_int(argv[1]));
   return 0;
 }
 #endif

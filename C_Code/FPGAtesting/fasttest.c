@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     long int percent = 0;
     long int lastPercent = -1;
     printf("%c[?25l", ASCII_ESC);
-    printf("Testing %i times\n", vals[0]);
+    printf("Testing %i times\n", string_to_int(argv[1]));
     printf("0 Percent");
 
     if (wiringPiSPISetup(0, SPIFREQ)<0){
@@ -40,9 +40,9 @@ int main(int argc, char *argv[]) {
         return -1;
     }
     clock_t start = clock(), diff;
-    for (long i=0; i<vals[0]; i++){
+    for (long i=0; i<string_to_int(argv[1]); i++){
         fpga_fasttran(2, &result);
-        percent=((i+1)*100)/vals[0];
+        percent=((i+1)*100)/string_to_int(argv[1]);
         printf("\r%li Percent", percent);
         // if (percent!=lastPercent){
             
@@ -61,14 +61,14 @@ int main(int argc, char *argv[]) {
     FILE* ptr;
       // File opened
     ptr = fopen("./tran_rate.txt", "a");
-    fprintf(ptr, "Error rate: %i/%i\n", errors, vals[0]);
+    fprintf(ptr, "Error rate: %li/%i\n", errors, string_to_int(argv[1]));
     float sec = (float)diff / CLOCKS_PER_SEC;
     fprintf(ptr, "Time elapsed: %fs\n", sec);
-    fprintf(ptr, "Average tran rate: %f Mbits/s\n\n", vals[0]*32/(sec*1E6));
+    fprintf(ptr, "Average tran rate: %f Mbits/s\n\n", string_to_int(argv[1])*32/(sec*1E6));
     fclose(ptr);
-    printf("\nError rate: %i/%i\n", errors, vals[0]);
+    printf("\nError rate: %li/%i\n", errors, string_to_int(argv[1]));
     printf("%c[?25h", ASCII_ESC);
     printf("Time elapsed: %fs\n", sec);
-    printf("Average tran rate: %f Mbits/s\n", vals[0]*32/(sec*1E6));
+    printf("Average tran rate: %f Mbits/s\n", string_to_int(argv[1])*32/(sec*1E6));
 
 }

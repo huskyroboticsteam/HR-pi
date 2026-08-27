@@ -178,9 +178,7 @@ static int raiseLowerTo(int32_t target_ticks, int raise_pin, int lower_pin) {
 int main(int argc, char *argv[]) {
   signal(SIGINT, intHandler);
   wiringPiSetupPinType(WPI_PIN_WPI);
-  int vals[argc - 1];
-  intparse(argc - 1, argv + 1, vals);
-  int rc = raiseLowerTo((int32_t)vals[0], COLUMN_RL_PIN2, COLUMN_RL_PIN1);
+  int rc = raiseLowerTo((int32_t)string_to_int(argv[1]), COLUMN_RL_PIN2, COLUMN_RL_PIN1);
   return (rc < 0) ? 1 : 0;
 }
 #endif
